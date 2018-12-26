@@ -29,18 +29,43 @@ window.CONDS =
   '上の宝箱は':
     710: 'ミミックだ'
     720: 'ミミックじゃない'
+    732: '装備品が入っている'
+    733: 'お金が入っている'
+    734: '消費アイテムが入っている'
+    742: '装備品が入っていない'
+    743: 'お金が入っていない'
+    744: '消費アイテムが入っていない'
   '下の宝箱は':
     810: 'ミミックだ'
     820: 'ミミックじゃない'
+    832: '装備品が入っている'
+    833: 'お金が入っている'
+    834: '消費アイテムが入っている'
+    842: '装備品が入っていない'
+    843: 'お金が入っていない'
+    844: '消費アイテムが入っていない'
   '左の宝箱は':
     910: 'ミミックだ'
     920: 'ミミックじゃない'
+    932: '装備品が入っている'
+    933: 'お金が入っている'
+    934: '消費アイテムが入っている'
+    942: '装備品が入っていない'
+    943: 'お金が入っていない'
+    944: '消費アイテムが入っていない'
   '右の宝箱は':
     1010: 'ミミックだ'
     1020: 'ミミックじゃない'
-  '赤い宝箱の中に':
+    1032: '装備品が入っている'
+    1033: 'お金が入っている'
+    1034: '消費アイテムが入っている'
+    1042: '装備品が入っていない'
+    1043: 'お金が入っていない'
+    1044: '消費アイテムが入っていない'
+  '赤い宝箱のなかに':
     10: 'ミミックがいるよ'
     20: 'ミミックはいないよ'
+  '赤い宝箱に':
     30: 'ミミックは0匹いる'
     31: 'ミミックは1匹いる'
     32: 'ミミックは2匹いる'
@@ -51,9 +76,10 @@ window.CONDS =
     37: 'ミミックは7匹いる'
     38: 'ミミックは8匹いる'
     39: 'ミミックは9匹いる'
-  '青い宝箱の中に':
+  '青い宝箱のなかに':
     110: 'ミミックがいるよ'
     120: 'ミミックはいないよ'
+  '青い宝箱に':
     130: 'ミミックは0匹いる'
     131: 'ミミックは1匹いる'
     132: 'ミミックは2匹いる'
@@ -64,9 +90,10 @@ window.CONDS =
     137: 'ミミックは7匹いる'
     138: 'ミミックは8匹いる'
     139: 'ミミックは9匹いる'
-  '黒い宝箱の中に':
+  '黒い宝箱のなかに':
     210: 'ミミックがいるよ'
     220: 'ミミックはいないよ'
+  '黒い宝箱に':
     230: 'ミミックは0匹いる'
     231: 'ミミックは1匹いる'
     232: 'ミミックは2匹いる'
@@ -77,24 +104,50 @@ window.CONDS =
     237: 'ミミックは7匹いる'
     238: 'ミミックは8匹いる'
     239: 'ミミックは9匹いる'
-  '一番上の列に':
-    310: 'ミミックがいるよ'
-    320: 'ミミックはいないよ'
-  '一番下の列に':
-    410: 'ミミックがいるよ'
-    420: 'ミミックはいないよ'
-  '一番左の列に':
-    510: 'ミミックがいるよ'
-    520: 'ミミックはいないよ'
-  '一番右の列に':
-    610: 'ミミックがいるよ'
-    620: 'ミミックはいないよ'
+  '一番上の列':
+    310: 'にミミックがいるよ'
+    320: 'にミミックはいないよ'
+    10002: 'のどこかに装備品が入っている'
+    10003: 'のどこかにお金が入っている'
+    10004: 'のどこかに消費アイテムが入っている'
+    10012: 'のどこにも装備品は入っていない'
+    10013: 'のどこにもお金は入っていない'
+    10014: 'のどこにも消費アイテムは入っていない'
+  '一番下の列':
+    410: 'にミミックがいるよ'
+    420: 'にミミックはいないよ'
+    20002: 'のどこかに装備品が入っている'
+    20003: 'のどこかにお金が入っている'
+    20004: 'のどこかに消費アイテムが入っている'
+    20012: 'のどこにも装備品は入っていない'
+    20013: 'のどこにもお金は入っていない'
+    20014: 'のどこにも消費アイテムは入っていない'
+  '一番左の列':
+    510: 'にミミックがいるよ'
+    520: 'にミミックはいないよ'
+    30002: 'のどこかに装備品が入っている'
+    30003: 'のどこかにお金が入っている'
+    30004: 'のどこかに消費アイテムが入っている'
+    30012: 'のどこにも装備品は入っていない'
+    30013: 'のどこにもお金は入っていない'
+    30014: 'のどこにも消費アイテムは入っていない'
+  '一番右の列':
+    610: 'にミミックがいるよ'
+    620: 'にミミックはいないよ'
+    40002: 'のどこかに装備品が入っている'
+    40003: 'のどこかにお金が入っている'
+    40004: 'のどこかに消費アイテムが入っている'
+    40012: 'のどこにも装備品は入っていない'
+    40013: 'のどこにもお金は入っていない'
+    40014: 'のどこにも消費アイテムは入っていない'
   '上の列と下の列は':
     1210: '上の方がミミックが多い'
     1220: '下の方がミミックが多い'
+    1230: 'ミミックの数は同じ'
   '左の列と右の列は':
     1310: '左の方がミミックが多い'
     1320: '右の方がミミックが多い'
+    1330: 'ミミックの数は同じ'
   '赤宝箱と':
     1410: '青宝箱は、赤宝箱の方がミミックが多い'
     1420: '青宝箱は、青宝箱の方がミミックが多い'
@@ -118,41 +171,79 @@ window.CONDS =
     1641: '青宝箱のミミックの数は同じ'
   '私は':
     1700: 'ミミックじゃない'
+  '赤い宝箱の':
+    1811: '上にミミックがいる'
+    1821: '上にミミックはいない'
+    1812: '下にミミックがいる'
+    1822: '下にミミックはいない'
+    1813: '左にミミックがいる'
+    1823: '左にミミックはいない'
+    1814: '右にミミックがいる'
+    1824: '右にミミックはいない'
+  '青い宝箱の':
+    1911: '上にミミックがいる'
+    1921: '上にミミックはいない'
+    1912: '下にミミックがいる'
+    1922: '下にミミックはいない'
+    1913: '左にミミックがいる'
+    1923: '左にミミックはいない'
+    1914: '右にミミックがいる'
+    1924: '右にミミックはいない'
+  '黒い宝箱の':
+    2011: '上にミミックがいる'
+    2021: '上にミミックはいない'
+    2012: '下にミミックがいる'
+    2022: '下にミミックはいない'
+    2013: '左にミミックがいる'
+    2023: '左にミミックはいない'
+    2014: '右にミミックがいる'
+    2024: '右にミミックはいない'
+  'ミミックの':
+    2111: '上に赤い宝箱がある'
+    2211: '上に青い宝箱がある'
+    2311: '上に黒い宝箱がある'
+    2112: '下に赤い宝箱がある'
+    2212: '下に青い宝箱がある'
+    2312: '下に黒い宝箱がある'
+    2113: '左に赤い宝箱がある'
+    2213: '左に青い宝箱がある'
+    2313: '左に黒い宝箱がある'
+    2114: '右に赤い宝箱がある'
+    2214: '右に青い宝箱がある'
+    2314: '右に黒い宝箱がある'
+
+  '赤の宝箱のどこかに':
+    3002: '装備品が入っている'
+    3003: 'お金が入っている'
+    3004: '消費アイテムが入っている'
+  '赤の宝箱には':
+    3102: '装備品は入っていない'
+    3103: 'お金は入っていない'
+    3104: '消費アイテムは入っていない'
+  '青の宝箱のどこかに':
+    4002: '装備品が入っている'
+    4003: 'お金が入っている'
+    4004: '消費アイテムが入っている'
+  '青の宝箱には':
+    4102: '装備品は入っていない'
+    4103: 'お金は入っていない'
+    4104: '消費アイテムは入っていない'
+  '黒の宝箱のどこかに':
+    5002: '装備品が入っている'
+    5003: 'お金が入っている'
+    5004: '消費アイテムが入っている'
+  '黒の宝箱には':
+    5102: '装備品は入っていない'
+    5103: 'お金は入っていない'
+    5104: '消費アイテムは入っていない'
+
 window.CACHE =
   TD_HTML: null
 
 $().ready ->
-  $('#num_x, #num_y').on 'change', reset
-  $('#judge').on 'click', judge
-  $('#clear').on 'click', clear
   init()
   debug()
 
-debug = ->
-  colors = []
-  conds = []
-
-  $('#num_x').val(3)
-  $('#num_y').val(3)
-
-  reset()
-
-  $('#num_mimic').val(2)
-  $('#num_money').val(0)
-  $('#num_equip').val(0)
-  $('#num_commodity').val(0)
-
-  for color, index in colors
-    $('select.box').eq(index).selectpicker('val', color)
-
-  for cond, index in conds
-    $('.cond1').eq(index).val(cond2cond1(cond))
-
-  $('.cond1').each ->
-    changeCond2.bind(@)()
-  
-  for cond, index in conds
-    $('.cond2').eq(index).val(cond)
 
 cond2cond1 = (cond)->
   for cond1, obj of window.CONDS
@@ -165,32 +256,39 @@ init = ->
   for index in [window.CONFIG.FIELD_MIN..window.CONFIG.FIELD_MAX]
     $('#num_x, #num_y').append($('<option>').attr('value', index).html(index))
   $('#num_x, #num_y').val(2)
+
+  $('#num_x, #num_y').on 'change', reset
+  $('#judge').on 'click', judge
+  $('#clear').on 'click', clear
+  $('#num_mimic_min, #num_mimic_max, #num_money, #num_equip, #num_commodity').on 'change', judge
   reset()
 
 clear = ->
-  numMimic = $('#num_mimic').val()
+  numMimicMin = $('#num_mimic_min').val()
+  numMimicMax = $('#num_mimic_max').val()
   reset()
-  $('#num_mimic').val(numMimic)
+  $('#num_mimic_min').val(numMimicMin)
+  $('#num_mimic_max').val(numMimicMax)
 
 reset = ->
   x = getX()
   y = getY()
   cellNum = getCellNum()
 
-  $('#num_mimic, #num_money, #num_equip, #num_commodity').html('')
+  $('#num_mimic_min, #num_mimic_max, #num_money, #num_equip, #num_commodity').html('')
   $('#field tbody').html('')
   for yIndex in [0...y]
     tr = $('<tr>')
     for xIndex in [0...x]
       index = yIndex*x+xIndex
       tr.append getTd(index)
-      $('#num_mimic, #num_money, #num_equip, #num_commodity').append($('<option>').html(index).attr('value', index))
+      $('#num_mimic_min, #num_mimic_max, #num_money, #num_equip, #num_commodity').append($('<option>').html(index).attr('value', index))
     $('#field tbody').append tr
   $('#field tbody').find('.box').selectpicker({
     noneSelectedText: ''
     width: 'fit'
   })
-  $('#num_mimic, #num_money, #num_equip, #num_commodity').append($('<option>').html(cellNum).attr('value', cellNum))
+  $('#num_mimic_min, #num_mimic_max, #num_money, #num_equip, #num_commodity').append($('<option>').html(cellNum).attr('value', cellNum))
 
 getTd = (index)->
   if window.CACHE.TD_HTML is null
@@ -198,10 +296,17 @@ getTd = (index)->
   td = $('<td>').html(window.CACHE.TD_HTML).addClass('cell center').attr('data-index', index)
   td.find('.cond1, .cond2').html('')
   td.find('.cond1').append $('<option>').html('').attr('value', 0)
+  td.find('.cond2').on 'change', judge
+
+
+  options = []
   for title, obj of window.CONDS
-    td.find('.cond1').append(
-      $('<option>').html(title)
-    )
+    options.push $('<option>').html(title)
+  options.sort (a, b)->
+    return -1 if a.text() < b.text()
+    return 1 if a.text() > b.text()
+    0
+  td.find('.cond1').append op for op in options
   td.find('.cond1').on 'change', changeCond2
   td
   
@@ -209,21 +314,32 @@ changeCond2 = ->
   cond1 = $(@).val()
   cond2 = $(@).parent().find('.cond2')
   cond2.html('').append($('<option>').html('').attr('value', 0))
+  options = []
   for condId, text of window.CONDS[cond1]
-    cond2.append($('<option>').html(text).attr('value', condId))
+    options.push $('<option>').html(text).attr('value', condId)
+  options.sort (a, b)->
+    return -1 if a.text() < b.text()
+    return 1 if a.text() > b.text()
+    0
+  cond2.append op for op in options
 
 judge = ->
   x = getX()
   y = getY()
   cellNum = getCellNum()
-  numMimic = getNumMimic()
+  numMimicMin = getNumMimicMin()
+  numMimicMax = getNumMimicMax()
   numMoney = getNumMoney()
   numEquip = getNumEquip()
   numCommodity = getNumCommodity()
+  nums = {}
+  nums[window.CONSTS.MIMIC] = [numMimicMin, numMimicMax]
+  nums[window.CONSTS.EQUIP] = numEquip
+  nums[window.CONSTS.MONEY] = numMoney
+  nums[window.CONSTS.COMMODITY] = numCommodity
 
   conds = Utl.arrayFill getCellNum()
   colors = Utl.arrayFill getCellNum()
-  [numMimic, numMoney, numEquip, numCommodity] = [getNumMimic(), getNumMoney(), getNumEquip(), getNumCommodity()]
   $('.cell').each ->
     index = Number $(@).attr('data-index')
     box = Number $(@).find('select.box').eq(0).val()
@@ -241,29 +357,40 @@ judge = ->
   console.log 'colors:', colors
   console.log 'stockedIndexes', stockedIndexes
 
+  ###
   # まずはミミックだけを仮定する
   patterns = genPattern([cellNum - numMimic, numMimic, 0, 0, 0])
-  validPatternOnlyMimicResearch = getValidPattern(conds, colors, stockedIndexes, patterns)
+  validPatternOnlyMimicResearch = getValidPattern(conds, colors, stockedIndexes, patterns, nums)
   console.log 'validPatternOnlyMimicResearch', validPatternOnlyMimicResearch
   # アイテム種別を考慮する必要がないか、この時点でミミックが確定できていれば終了
-  if mustConsiderType(conds) or checkMimic(validPatternOnlyMimicResearch, numMimic)
+  if checkMimic(validPatternOnlyMimicResearch, numMimic)
     return viewTitle validPatternOnlyMimicResearch
 
+  # 確定パターンがないなら全リセット
+  isEmpty = true
+  for ary in validPatternOnlyMimicResearch
+    isEmpty = false if ary.length > 0
+  validPatternOnlyMimicResearch = null if isEmpty
+  ###
+  validPatternOnlyMimicResearch = null
+
   # 確定をのぞいてさらに探索
-  numNotMimic = 
-    if (cellNum - numMimic) is (numEquip + numMoney + numCommodity)
-      0
-    else
-      numEquip = numMoney = numCommodity = 0
-      cellNum - numMimic
-  patterns = genPattern([numNotMimic, numMimic, numEquip, numMoney, numCommodity], validPatternOnlyMimicResearch)
-  validPattern = getValidPattern(conds, colors, stockedIndexes, patterns)
+  patterns = []
+  for numMimic in [numMimicMin..numMimicMax]
+    numNotMimic = 
+      if (cellNum - numMimic) is (numEquip + numMoney + numCommodity)
+        0
+      else
+        numEquip = numMoney = numCommodity = 0
+        cellNum - numMimic
+    patterns = patterns.concat genPattern([numNotMimic, numMimic, numEquip, numMoney, numCommodity], validPatternOnlyMimicResearch)
+  validPattern = getValidPattern(conds, colors, stockedIndexes, patterns, nums)
   console.log 'validPattern', validPattern
   # 全探索したので最終回答
   viewTitle validPattern
   
 viewTitle = (views)->
-  $('td, .title').removeClass('mimic money equip commodity unknown')
+  $('td, .title').removeClass('not_mimic mimic money equip commodity unknown')
   for typeConsts, index in views
     [className, html] = 
       if typeConsts.length > 1
@@ -290,20 +417,31 @@ viewTitle = (views)->
 
 # 宝の種別を考慮しないといけないか
 mustConsiderType = (conds)->
+  for cond in conds
+    return true if 732 <= cond <= 744
+    return true if 832 <= cond <= 844
+    return true if 932 <= cond <= 944
+    return true if 1032 <= cond <= 1044
+    return true if 10002 <= cond <= 10014
+    return true if 20002 <= cond <= 20014
+    return true if 30002 <= cond <= 30014
+    return true if 40002 <= cond <= 40014
+    return true if 3002 <= cond <= 5004
   false
 
-checkMimic = (validPattern, numMimic)->
+
+checkMimic = (validPattern, numMimicMin, numMimicMax)->
   mimic = 0
   for typeConstArray, index in validPattern
     mimic++ if typeConstArray.length is 1 and typeConstArray[0] is window.CONSTS.MIMIC
-  console.log 'checkMimic:', mimic is numMimic
-  mimic is numMimic
+  console.log 'checkMimic:', numMimicMin <= mimic <= numMimicMax
+  numMimicMin <= mimic <= numMimicMax
 
 
-getValidPattern = (conds, colors, stockedIndexes, patterns)->
+getValidPattern = (conds, colors, stockedIndexes, patterns, nums)->
   valids = []
   for pattern in patterns
-    res = isValidPattern(conds, colors, stockedIndexes, pattern)
+    res = isValidPattern(conds, colors, stockedIndexes, pattern, nums)
     valids.push pattern if res
   console.log 'valids', valids
 
@@ -314,68 +452,41 @@ getValidPattern = (conds, colors, stockedIndexes, patterns)->
         collects[index].push type
   collects
 
-isValidPattern = (conds, colors, stockedIndexes, pattern)->
+isValidPattern = (conds, colors, stockedIndexes, pattern, nums)->
   console.log(conds, pattern)
   for cond, index in conds
     isMimic = pattern[index] is window.CONSTS.MIMIC
     res = switch cond
       # ある宝箱の隣にミミックがいる
-      # 上
-      when 710 then isContainType(pattern, stockedIndexes.NEAR[index][window.DIRECTIONS.UP], window.CONSTS.MIMIC)
-      # 下
-      when 810 then isContainType(pattern, stockedIndexes.NEAR[index][window.DIRECTIONS.DOWN], window.CONSTS.MIMIC)
-      # 左
-      when 910 then isContainType(pattern, stockedIndexes.NEAR[index][window.DIRECTIONS.LEFT], window.CONSTS.MIMIC)
-      # 右
-      when 1010 then isContainType(pattern, stockedIndexes.NEAR[index][window.DIRECTIONS.RIGHT], window.CONSTS.MIMIC)
+      when 710,810,910,1010 then isContainType(pattern, stockedIndexes.NEAR[index][cond // 100 % 6], window.CONSTS.MIMIC, nums)
       # ある宝箱の隣にミミックがいない
-      # 上
-      when 720 then isNotContainType(pattern, stockedIndexes.NEAR[index][window.DIRECTIONS.UP], window.CONSTS.MIMIC)
-      # 下
-      when 820 then isNotContainType(pattern, stockedIndexes.NEAR[index][window.DIRECTIONS.DOWN], window.CONSTS.MIMIC)
-      # 左
-      when 920 then isNotContainType(pattern, stockedIndexes.NEAR[index][window.DIRECTIONS.LEFT], window.CONSTS.MIMIC)
-      # 右
-      when 1020 then isNotContainType(pattern, stockedIndexes.NEAR[index][window.DIRECTIONS.RIGHT], window.CONSTS.MIMIC)
+      when 720,820,920,1020 then isNotContainType(pattern, stockedIndexes.NEAR[index][cond // 100 % 6], window.CONSTS.MIMIC, nums)
+
       # ある色の宝箱にミミックがいる
-      # 赤
-      when 10 then isContainType(pattern, stockedIndexes.COLOR[window.COLORS.RED], window.CONSTS.MIMIC)
-      # 青
-      when 110 then isContainType(pattern, stockedIndexes.COLOR[window.COLORS.BLUE], window.CONSTS.MIMIC)
-      # 黒
-      when 210 then isContainType(pattern, stockedIndexes.COLOR[window.COLORS.BLACK], window.CONSTS.MIMIC)
+      when 10,110,210 then isContainType(pattern, stockedIndexes.COLOR[cond // 100 + 1], window.CONSTS.MIMIC, nums)
+
       # ある色の宝箱にミミックがn匹いる
-      # 赤
-      when 30,31,32,33,34,35,36,37,38,39 then isContainTypeCount(pattern, stockedIndexes.COLOR[window.COLORS.RED], window.CONSTS.MIMIC, cond % 30)
-      # 青
-      when 130,131,132,133,134,135,136,137,138,139 then isContainTypeCount(pattern, stockedIndexes.COLOR[window.COLORS.BLUE], window.CONSTS.MIMIC, cond % 130)
-      # 黒
-      when 230,231,232,233,234,235,236,237,238,239 then isContainTypeCount(pattern, stockedIndexes.COLOR[window.COLORS.BLACK], window.CONSTS.MIMIC, cond % 230)
+      when 30,31,32,33,34,35,36,37,38,39,130,131,132,133,134,135,136,137,138,139,230,231,232,233,234,235,236,237,238,239 then isContainTypeCount(pattern, stockedIndexes.COLOR[cond // 100 + 1], window.CONSTS.MIMIC, cond % 10, nums)
+
       # ある色の宝箱にミミックがいない
-      # 赤
-      when 20 then isNotContainType(pattern, stockedIndexes.COLOR[window.COLORS.RED], window.CONSTS.MIMIC)
-      # 青
-      when 120 then isNotContainType(pattern, stockedIndexes.COLOR[window.COLORS.BLUE], window.CONSTS.MIMIC)
-      # 黒
-      when 220 then isNotContainType(pattern, stockedIndexes.COLOR[window.COLORS.BLACK], window.CONSTS.MIMIC)
+      when 20,120,220 then isNotContainType(pattern, stockedIndexes.COLOR[cond // 100 + 1], window.CONSTS.MIMIC, nums)
+
+      # ある色の宝箱に特定のアイテムが入っている
+      when 3002,3003,3004,4002,4003,4004,5002,5003,5004 then isContainType(pattern, stockedIndexes.COLOR[cond // 1000 - 2], cond % 10, nums)
+      # ある色の宝箱に特定のアイテムが入っていない
+      when 3102,3103,3104,4102,4103,4104,5102,5103,5104 then isNotContainType(pattern, stockedIndexes.COLOR[cond // 1000 - 2], cond % 10, nums)
+
       # ある列にミミックがいる
-      # 上
-      when 310 then isContainType(pattern, stockedIndexes.LINE[window.DIRECTIONS.UP], window.CONSTS.MIMIC)
-      # 下
-      when 410 then isContainType(pattern, stockedIndexes.LINE[window.DIRECTIONS.DOWN], window.CONSTS.MIMIC)
-      # 左
-      when 510 then isContainType(pattern, stockedIndexes.LINE[window.DIRECTIONS.LEFT], window.CONSTS.MIMIC)
-      # 右
-      when 610 then isContainType(pattern, stockedIndexes.LINE[window.DIRECTIONS.RIGHT], window.CONSTS.MIMIC)
+      when 310,410,510,610 then isContainType(pattern, stockedIndexes.LINE[cond // 100 - 2], window.CONSTS.MIMIC, nums)
+
       # ある列にミミックがいない
-      # 上
-      when 320 then isNotContainType(pattern, stockedIndexes.LINE[window.DIRECTIONS.UP], window.CONSTS.MIMIC)
-      # 下
-      when 420 then isNotContainType(pattern, stockedIndexes.LINE[window.DIRECTIONS.DOWN], window.CONSTS.MIMIC)
-      # 左
-      when 520 then isNotContainType(pattern, stockedIndexes.LINE[window.DIRECTIONS.LEFT], window.CONSTS.MIMIC)
-      # 右
-      when 620 then isNotContainType(pattern, stockedIndexes.LINE[window.DIRECTIONS.RIGHT], window.CONSTS.MIMIC)
+      when 320,420,520,620 then isNotContainType(pattern, stockedIndexes.LINE[cond // 100 - 2], window.CONSTS.MIMIC, nums)
+
+      # ある列に特定のアイテムが入っている
+      when 10002,10003,10004,20002,20003,20004,30002,30003,30004,40002,40003,40004 then isContainType(pattern, stockedIndexes.LINE[cond // 10000], cond % 10, nums)
+      # ある列に特定のアイテムが入っていない
+      when 10012,10013,10014,20012,20013,20014,30012,30013,30014,40012,40013,40014 then isNotContainType(pattern, stockedIndexes.LINE[cond // 10000], cond % 10, nums)
+
       # ミミック同士は隣り合った位置に
       # いる
       when 1100 then isMimicNearly(pattern, stockedIndexes.NEAR)
@@ -387,12 +498,16 @@ isValidPattern = (conds, colors, stockedIndexes, pattern)->
       when 1210 then compareIndexes(pattern, stockedIndexes.LINE[window.DIRECTIONS.UP], stockedIndexes.LINE[window.DIRECTIONS.DOWN], -1)
       # 下の列の方がミミックが多い
       when 1220 then compareIndexes(pattern, stockedIndexes.LINE[window.DIRECTIONS.UP], stockedIndexes.LINE[window.DIRECTIONS.DOWN], 1)
+      # ミミックの数は同じ
+      when 1230 then compareIndexes(pattern, stockedIndexes.LINE[window.DIRECTIONS.UP], stockedIndexes.LINE[window.DIRECTIONS.DOWN], 0)
 
       # 左の列と右の列は
       # 左の列の方がミミックが多い
       when 1310 then compareIndexes(pattern, stockedIndexes.LINE[window.DIRECTIONS.LEFT], stockedIndexes.LINE[window.DIRECTIONS.RIGHT], -1)
       # 右の列の方がミミックが多い
       when 1320 then compareIndexes(pattern, stockedIndexes.LINE[window.DIRECTIONS.LEFT], stockedIndexes.LINE[window.DIRECTIONS.RIGHT], 1)
+      # ミミックの数は同じ
+      when 1330 then compareIndexes(pattern, stockedIndexes.LINE[window.DIRECTIONS.LEFT], stockedIndexes.LINE[window.DIRECTIONS.RIGHT], 0)
 
       # 赤宝箱と青宝箱は
       # 赤宝箱の方がミミックが多い
@@ -417,7 +532,21 @@ isValidPattern = (conds, colors, stockedIndexes, pattern)->
       when 1541, 1641 then compareIndexes(pattern, stockedIndexes.COLOR[window.COLORS.BLUE], stockedIndexes.COLOR[window.COLORS.BLACK], 0)
 
       # 私はミミックじゃない
-      when 1700 then isNotContainType(pattern, [index], window.CONSTS.MIMIC)
+      when 1700 then isNotContainType(pattern, [index], window.CONSTS.MIMIC, nums)
+
+      # どこかの方向は特定の宝だ
+      when 732,733,734,832,833,834,932,933,934 then isContainType(pattern, stockedIndexes.NEAR[index][cond // 100 - 6], cond % 10, nums)
+      # どこかの方向は特定の宝ではない
+      when 742,743,744,842,843,844,942,943,944 then isNotContainType(pattern, stockedIndexes.NEAR[index][cond // 100 - 6], cond % 10, nums)
+
+      # 特定の色の宝箱の
+      # どこかにミミックがいる
+      when 1811,1812,1813,1814,1911,1912,1913,1914,2011,2012,2013,2014 then isContainType(pattern, stockedIndexes.COLOR_NEAR[Math.floor(cond / 100) % 17][cond % 10], window.CONSTS.MIMIC, nums)
+      when 1821,1822,1823,1824,1921,1922,1923,1924,2021,2022,2023,2024 then isNotContainType(pattern, stockedIndexes.COLOR_NEAR[Math.floor(cond / 100) % 17][cond % 10], window.CONSTS.MIMIC, nums)
+
+      # ミミックの
+      # どこかにどれかの色がある
+      when 2111,2112,2113,2114,2211,2212,2213,2214,2311,2312,2313,2314 then isContainColorNearMimic(pattern, colors, stockedIndexes.NEAR, cond % 10, Math.floor(cond / 100) % 20)
 
       else (isMimic = false) or true
       
@@ -460,16 +589,27 @@ isMimicNearly = (pattern, nearIndexes)->
   true
 
 # 指定したインデックスに指定したタイプがいるか
-isContainType = (pattern, indexes, typeConst)->
+isContainType = (pattern, indexes, typeConst, nums)->
+  # 存在しない
+  if Utl.inArray(typeConst, [window.CONSTS.MONEY, window.CONSTS.EQUIP, window.CONSTS.COMMODITY])
+    return false if nums[typeConst] is 0
   for index in indexes
     # ミミック以外を指定で、ミミックではない
     return true if typeConst is window.CONSTS.NOT_MIMIC and pattern[index] isnt window.CONSTS.MIMIC
+    # ミミック以外の特定のアイテムを指定で、ミミックではない
+    return true if Utl.inArray(typeConst, [window.CONSTS.MONEY, window.CONSTS.EQUIP, window.CONSTS.COMMODITY]) and pattern[index] is window.CONSTS.NOT_MIMIC
     # タイプ合致
     return true if typeConst is pattern[index]
   false
 
 # 指定したインデックスに指定したタイプがn匹いるか
-isContainTypeCount = (pattern, indexes, typeConst, count)->
+isContainTypeCount = (pattern, indexes, typeConst, count, nums)->
+  # そんなに存在しえない
+  if Utl.inArray(typeConst, [window.CONSTS.MONEY, window.CONSTS.EQUIP, window.CONSTS.COMMODITY])
+    return false if nums[typeConst] < count
+  if typeConst is window.CONSTS.MIMIC
+    return false unless nums[typeConst][0] <= count <= nums[typeConst][1]
+
   nowCount = 0
   for index in indexes
     if typeConst is window.CONSTS.NOT_MIMIC and pattern[index] isnt window.CONSTS.MIMIC
@@ -480,15 +620,45 @@ isContainTypeCount = (pattern, indexes, typeConst, count)->
   count is nowCount
 
 # 指定したインデックスに指定したタイプがいないか
-isNotContainType = (pattern, indexes, typeConst)->
+isNotContainType = (pattern, indexes, typeConst, nums)->
+  # 存在しない
+  if Utl.inArray(typeConst, [window.CONSTS.MONEY, window.CONSTS.EQUIP, window.CONSTS.COMMODITY])
+    return true if nums[typeConst] is 0
+  if typeConst is window.CONSTS.MIMIC
+    return true if nums[typeConst][0] is 0 and nums[typeConst][1] is 0
+
   for index in indexes
     # ミミック以外が含まれていないのに、ミミック以外が含まれている
     return false if typeConst is window.CONSTS.NOT_MIMIC and pattern[index] isnt window.CONSTS.MIMIC
+    # ミミック以外の特定のアイテムを指定で、ミミックではない
+    return false if Utl.inArray(typeConst, [window.CONSTS.MONEY, window.CONSTS.EQUIP, window.CONSTS.COMMODITY]) and pattern[index] is window.CONSTS.NOT_MIMIC
     # ミミックが含まれていないのに、ミミックである
     return false if typeConst is window.CONSTS.MIMIC and pattern[index] is window.CONSTS.MIMIC
     # タイプ合致
     return false if typeConst is pattern[index]
   true
+
+# ミミックの隣接に特定の色があるか
+isContainColorNearMimic = (pattern, colors, nearIndexes, direction, color)->
+  mimicNearIndexes = getMimicNearIndexes pattern, nearIndexes, direction
+  for mimicNearIndex in mimicNearIndexes
+    return true if colors[mimicNearIndex] is color
+  false
+
+getMimicIndexes = (pattern)->
+  res = []
+  for typeConst, index in pattern
+    res.push index if typeConst is window.CONSTS.MIMIC
+  res
+
+# ミミックの隣接マスを返す
+getMimicNearIndexes = (pattern, nearIndexes, direction)->
+  res = []
+  mimicIndexes = getMimicIndexes pattern
+  for mimicIndex in mimicIndexes
+    for index in nearIndexes[mimicIndex][direction]
+      res.push index unless Utl.inArray index, res
+  res
 
 # 特定の色の宝箱のインデックス
 getColorIndexes = (colors)->
@@ -564,8 +734,10 @@ getY = ->
   Number $('#num_y').val()
 getCellNum = ->
   getX() * getY()
-getNumMimic = ->
-  Number $('#num_mimic').val()
+getNumMimicMin = ->
+  Number $('#num_mimic_min').val()
+getNumMimicMax = ->
+  Number $('#num_mimic_max').val()
 getNumMoney = ->
   Number $('#num_money').val()
 getNumEquip = ->
