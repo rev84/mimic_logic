@@ -72,6 +72,7 @@
 <div class="container">
   <p class="form-inline">
     <button class="btn btn-hg btn-primary" id="judge">判定</button>
+    <button class="btn btn-hg btn-warning" id="clear">クリア</button>
     サイズ
     <select class="form-control size" id="num_x">
     </select>
@@ -102,7 +103,8 @@
 
 <div class="no_display">
   <div id="cell_sample">
-    <select class="selectpicker box">
+    <div class="title"></div>
+    <select class="box">
       <option value="0"></option>
       <option value="1" data-content="<img src='./image/red.png'>"></option>
       <option value="2" data-content="<img src='./image/blue.png'>"></option>
@@ -110,20 +112,9 @@
     </select>
 
     <select class="form-control cond1">
-      <option value="0"></option>
-      <option value="1">赤い宝箱の中に</option>
-      <option value="2">青い宝箱の中に</option>
-      <option value="3">黒い宝箱の中に</option>
-      <option value="11">上の宝箱は</option>
-      <option value="12">左の宝箱は</option>
-      <option value="13">右の宝箱は</option>
-      <option value="14">下の宝箱は</option>
     </select>
 
     <select class="form-control cond2">
-      <option value="0"></option>
-      <option value="1">ミミックじゃないよ</option>
-      <option value="2">ミミックだよ</option>
     </select>
   </div>
 </div>
