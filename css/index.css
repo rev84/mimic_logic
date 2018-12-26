@@ -1,0 +1,22 @@
+.center {
+  text-align:center;
+}
+.text {
+  border:double 1px #000000;
+  max-width:600px;
+}
+.size {
+  width: 60px;
+}
+.no_display {
+  display: none;
+}
+.red {
+  color: red;
+}
+.blue {
+  color: blue;
+}
+.black {
+  color: gray;
+}
