@@ -236,6 +236,16 @@ window.CONDS =
     5102: '装備品は入っていない'
     5103: 'お金は入っていない'
     5104: '消費アイテムは入っていない'
+  'この中にミミックは':
+    50001: '1匹いる'
+    50002: '2匹いる'
+    50003: '3匹いる'
+    50004: '4匹いる'
+    50005: '5匹いる'
+    50006: '6匹いる'
+    50007: '7匹いる'
+    50008: '8匹いる'
+    50009: '9匹いる'
 
 window.CACHE =
   TD_HTML: null
@@ -548,6 +558,9 @@ isValidPattern = (conds, colors, stockedIndexes, pattern, nums)->
       # どこかにどれかの色がある
       when 2111,2112,2113,2114,2211,2212,2213,2214,2311,2312,2313,2314 then isContainColorNearMimic(pattern, colors, stockedIndexes.NEAR, cond % 10, Math.floor(cond / 100) % 20)
 
+      # この中にミミックはn匹いる
+      when 50001,50002,50003,50004,50005,50006,50007,50008,50009 then isContainTypeCount(pattern, [0...pattern.length], window.CONSTS.MIMIC, cond % 10, nums)
+
       else (isMimic = false) or true
       
     res = not res if isMimic
@@ -577,16 +590,17 @@ compareIndexes = (pattern, indexes1, indexes2, win)->
 
 # ミミック同士は隣あった位置にいるか
 isMimicNearly = (pattern, nearIndexes)->
+  # 1体しかいないなら偽
+  return false if getMimicIndexes(pattern).length is 1
+
   mimics = []
   for typeConst, index in pattern
     mimics.push index if typeConst is window.CONSTS.MIMIC
   for index1 in [0...mimics.length]
     for index2 in [index1+1...mimics.length]
-      isExist = false
       for key, indexes of nearIndexes[mimics[index1]]
-        isExist = true if Utl.inArray(mimics[index2], indexes)
-      return false unless isExist
-  true
+        return true if Utl.inArray(mimics[index2], indexes)
+  false
 
 # 指定したインデックスに指定したタイプがいるか
 isContainType = (pattern, indexes, typeConst, nums)->
@@ -608,7 +622,7 @@ isContainTypeCount = (pattern, indexes, typeConst, count, nums)->
   if Utl.inArray(typeConst, [window.CONSTS.MONEY, window.CONSTS.EQUIP, window.CONSTS.COMMODITY])
     return false if nums[typeConst] < count
   if typeConst is window.CONSTS.MIMIC
-    return false unless nums[typeConst][0] <= count <= nums[typeConst][1]
+    return false if nums[typeConst][1] < count
 
   nowCount = 0
   for index in indexes

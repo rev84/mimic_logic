@@ -273,6 +273,17 @@ window.CONDS = {
     5102: '装備品は入っていない',
     5103: 'お金は入っていない',
     5104: '消費アイテムは入っていない'
+  },
+  'この中にミミックは': {
+    50001: '1匹いる',
+    50002: '2匹いる',
+    50003: '3匹いる',
+    50004: '4匹いる',
+    50005: '5匹いる',
+    50006: '6匹いる',
+    50007: '7匹いる',
+    50008: '8匹いる',
+    50009: '9匹いる'
   }
 };
 
@@ -586,6 +597,7 @@ isValidPattern = function(conds, colors, stockedIndexes, pattern, nums) {
     cond = conds[index];
     isMimic = pattern[index] === window.CONSTS.MIMIC;
     res = (function() {
+      var ref;
       switch (cond) {
         // ある宝箱の隣にミミックがいる
         case 710:
@@ -838,6 +850,21 @@ isValidPattern = function(conds, colors, stockedIndexes, pattern, nums) {
         case 2313:
         case 2314:
           return isContainColorNearMimic(pattern, colors, stockedIndexes.NEAR, cond % 10, Math.floor(cond / 100) % 20);
+        // この中にミミックはn匹いる
+        case 50001:
+        case 50002:
+        case 50003:
+        case 50004:
+        case 50005:
+        case 50006:
+        case 50007:
+        case 50008:
+        case 50009:
+          return isContainTypeCount(pattern, (function() {
+            var results = [];
+            for (var l = 0, ref = pattern.length; 0 <= ref ? l < ref : l > ref; 0 <= ref ? l++ : l--){ results.push(l); }
+            return results;
+          }).apply(this), window.CONSTS.MIMIC, cond % 10, nums);
         default:
           return (isMimic = false) || true;
       }
@@ -885,7 +912,11 @@ compareIndexes = function(pattern, indexes1, indexes2, win) {
 
 // ミミック同士は隣あった位置にいるか
 isMimicNearly = function(pattern, nearIndexes) {
-  var index, index1, index2, indexes, isExist, j, key, l, len, mimics, o, ref, ref1, ref2, ref3, typeConst;
+  var index, index1, index2, indexes, j, key, l, len, mimics, o, ref, ref1, ref2, ref3, typeConst;
+  if (getMimicIndexes(pattern).length === 1) {
+    // 1体しかいないなら偽
+    return false;
+  }
   mimics = [];
   for (index = j = 0, len = pattern.length; j < len; index = ++j) {
     typeConst = pattern[index];
@@ -895,20 +926,16 @@ isMimicNearly = function(pattern, nearIndexes) {
   }
   for (index1 = l = 0, ref = mimics.length; (0 <= ref ? l < ref : l > ref); index1 = 0 <= ref ? ++l : --l) {
     for (index2 = o = ref1 = index1 + 1, ref2 = mimics.length; (ref1 <= ref2 ? o < ref2 : o > ref2); index2 = ref1 <= ref2 ? ++o : --o) {
-      isExist = false;
       ref3 = nearIndexes[mimics[index1]];
       for (key in ref3) {
         indexes = ref3[key];
         if (Utl.inArray(mimics[index2], indexes)) {
-          isExist = true;
+          return true;
         }
-      }
-      if (!isExist) {
-        return false;
       }
     }
   }
-  return true;
+  return false;
 };
 
 // 指定したインデックスに指定したタイプがいるか
@@ -948,7 +975,7 @@ isContainTypeCount = function(pattern, indexes, typeConst, count, nums) {
     }
   }
   if (typeConst === window.CONSTS.MIMIC) {
-    if (!((nums[typeConst][0] <= count && count <= nums[typeConst][1]))) {
+    if (nums[typeConst][1] < count) {
       return false;
     }
   }
@@ -2013,13 +2040,13 @@ window.Utl = (function() {
 
 debug = function() {
   var color, colors, cond, conds, index, j, l, len, len1, len2, o, results;
-  conds = [310, 310, 410, 520, 520, 520];
-  colors = [1, 3, 3, 2, 1, 1];
+  conds = [50001, 820, 920, 1110, 0, 0, 0, 0, 0];
+  colors = [3, 3, 2, 1, 3, 3, 2, 2, 2];
   $('#num_x').val(3);
-  $('#num_y').val(2);
+  $('#num_y').val(3);
   reset();
   $('#num_mimic_min').val(1);
-  $('#num_mimic_max').val(2);
+  $('#num_mimic_max').val(4);
   $('#num_money').val(0);
   $('#num_equip').val(0);
   $('#num_commodity').val(0);
