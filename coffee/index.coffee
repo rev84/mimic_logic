@@ -367,35 +367,42 @@ judge = ->
   console.log 'colors:', colors
   console.log 'stockedIndexes', stockedIndexes
 
-  ###
   # まずはミミックだけを仮定する
-  patterns = genPattern([cellNum - numMimic, numMimic, 0, 0, 0])
-  validPatternOnlyMimicResearch = getValidPattern(conds, colors, stockedIndexes, patterns, nums)
-  console.log 'validPatternOnlyMimicResearch', validPatternOnlyMimicResearch
+  condsLight = Utl.clone conds
+  # 条件を緩める
+  for condsIndex in [0...condsLight.length]
+    if mustConsiderType([condsLight[condsIndex]])
+      condsLight[condsIndex] = 0
+
+  patterns = []
+  for numMimic in [numMimicMin..numMimicMax]
+    patterns = patterns.concat genPattern([cellNum - numMimic, numMimic, 0, 0, 0])
+  validsOnlyMimicResearch = getValidPatterns(condsLight, colors, stockedIndexes, patterns, nums)
+  validPatternOnlyMimicResearch = statValidPatterns(validsOnlyMimicResearch)
+  console.log 'validsOnlyMimicResearch, validPatternOnlyMimicResearch', validsOnlyMimicResearch, validPatternOnlyMimicResearch
   # アイテム種別を考慮する必要がないか、この時点でミミックが確定できていれば終了
-  if checkMimic(validPatternOnlyMimicResearch, numMimic)
+  if not mustConsiderType(conds) or checkMimic(validPatternOnlyMimicResearch, numMimic)
     return viewTitle validPatternOnlyMimicResearch
 
   # 確定パターンがないなら全リセット
-  isEmpty = true
-  for ary in validPatternOnlyMimicResearch
-    isEmpty = false if ary.length > 0
-  validPatternOnlyMimicResearch = null if isEmpty
-  ###
-  validPatternOnlyMimicResearch = null
-
-  # 確定をのぞいてさらに探索
-  patterns = []
-  for numMimic in [numMimicMin..numMimicMax]
-    numNotMimic = 
-      if (cellNum - numMimic) is (numEquip + numMoney + numCommodity)
-        0
-      else
-        numEquip = numMoney = numCommodity = 0
-        cellNum - numMimic
-    patterns = patterns.concat genPattern([numNotMimic, numMimic, numEquip, numMoney, numCommodity], validPatternOnlyMimicResearch)
-  validPattern = getValidPattern(conds, colors, stockedIndexes, patterns, nums)
-  console.log 'validPattern', validPattern
+  valids = []
+  for validOnlyMimicResearch in validsOnlyMimicResearch
+    numMimic = 0
+    for typeConst in validOnlyMimicResearch
+      numMimic++ if typeConst is window.CONSTS.MIMIC
+    for numEquip in [0..(cellNum - numMimic)]
+      for numMoney in [0..(cellNum - numMimic)]
+        for numCommodity in [0..(cellNum - numMimic)]
+          continue unless (numMimic + numEquip + numMoney + numCommodity) is cellNum
+          patterns = genPattern([0, numMimic, numEquip, numMoney, numCommodity], validOnlyMimicResearch)
+          nums = {}
+          nums[window.CONSTS.MIMIC] = [numMimic, numMimic]
+          nums[window.CONSTS.EQUIP] = numEquip
+          nums[window.CONSTS.MONEY] = numMoney
+          nums[window.CONSTS.COMMODITY] = numCommodity
+          valids = valids.concat getValidPatterns(conds, colors, stockedIndexes, patterns, nums)
+  validPattern = statValidPatterns(valids)
+  console.log 'valids, validPattern', valids, validPattern
   # 全探索したので最終回答
   viewTitle validPattern
   
@@ -436,7 +443,7 @@ mustConsiderType = (conds)->
     return true if 20002 <= cond <= 20014
     return true if 30002 <= cond <= 30014
     return true if 40002 <= cond <= 40014
-    return true if 3002 <= cond <= 5004
+    return true if 3002 <= cond <= 5104
   false
 
 
@@ -448,16 +455,19 @@ checkMimic = (validPattern, numMimicMin, numMimicMax)->
   numMimicMin <= mimic <= numMimicMax
 
 
-getValidPattern = (conds, colors, stockedIndexes, patterns, nums)->
+getValidPatterns = (conds, colors, stockedIndexes, patterns, nums)->
   valids = []
   for pattern in patterns
     res = isValidPattern(conds, colors, stockedIndexes, pattern, nums)
     valids.push pattern if res
-  console.log 'valids', valids
+  valids
 
-  collects = Utl.arrayFill colors.length, []
-  for valid in valids
-    for type ,index in valid
+statValidPatterns = (validPatterns)->
+  collects = null
+  for valid in validPatterns
+    for type, index in valid
+      if collects is null
+        collects = Utl.arrayFill valid.length, []
       if not Utl.inArray type, collects[index]
         collects[index].push type
   collects
@@ -759,19 +769,12 @@ getNumEquip = ->
 getNumCommodity = ->
   Number $('#num_commodity').val()
 
-# [confirmIndexes]
-# indexにあわせて確定のtypeConstが入っている
-genPattern = (ary, confirmIndexes = null)->
+genPattern = (ary, pattern = null)->
   # [ミミック以外(オールマイティ), ミミック, 装備, お金, 消費アイテム]
   consts = [window.CONSTS.NOT_MIMIC, window.CONSTS.MIMIC, window.CONSTS.EQUIP, window.CONSTS.MONEY, window.CONSTS.COMMODITY]
   remain = Utl.clone ary
   total = 0
   total += num for num in ary
-
-  if confirmIndexes isnt null
-    for constsArray, index in confirmIndexes
-      if constsArray.length is 1 and constsArray[0] isnt window.CONSTS.NOT_MIMIC
-        ary[constsArray[0]]--
 
   all = []
   getPatternFunc = (m, remain)->
@@ -780,21 +783,14 @@ genPattern = (ary, confirmIndexes = null)->
       return true
     for num, index in remain
       continue if num <= 0
-      # 該当しないなら飛ばす
-      if confirmIndexes isnt null
-        condNotMimic = Utl.inArray(window.CONSTS.NOT_MIMIC, confirmIndexes[m.length])
-        condEquip = Utl.inArray(window.CONSTS.EQUIP, confirmIndexes[m.length])
-        condMoney = Utl.inArray(window.CONSTS.MONEY, confirmIndexes[m.length])
-        condCommodity = Utl.inArray(window.CONSTS.COMMODITY, confirmIndexes[m.length])
-        if index is window.CONSTS.NOT_MIMIC
-          if not condNotMimic and not condEquip and not condMoney and not condCommodity
-            continue
-        else if Utl.inArray(index, [window.CONSTS.EQUIP, window.CONSTS.MONEY, window.CONSTS.COMMODITY])
-          if not condNotMimic and not Utl.inArray(index, confirmIndexes[m.length])
-            continue
-        else if index is window.CONSTS.MIMIC
-          if not Utl.inArray(index, confirmIndexes[m.length])
-            continue
+      # 指定のもの以外で埋める
+      if pattern isnt null
+        switch pattern[m.length]
+          when window.CONSTS.NOT_MIMIC
+            continue if consts[index] is window.CONSTS.MIMIC
+          when window.CONSTS.MIMIC
+            continue if consts[index] isnt window.CONSTS.MIMIC
+
       newM = Utl.clone m
       newRemain = Utl.clone remain
       newRemain[index]--
@@ -802,5 +798,5 @@ genPattern = (ary, confirmIndexes = null)->
       getPatternFunc(newM, newRemain)
 
   getPatternFunc([], remain)
-  console.log '組み合わせ:', all
+  console.log 'genPattern 組み合わせ:', ary, pattern, all
   all
