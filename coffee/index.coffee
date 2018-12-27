@@ -334,6 +334,7 @@ changeCond2 = ->
   cond2.append op for op in options
 
 judge = ->
+  viewTitle(null)
   x = getX()
   y = getY()
   cellNum = getCellNum()
@@ -374,27 +375,56 @@ judge = ->
     if mustConsiderType([condsLight[condsIndex]])
       condsLight[condsIndex] = 0
 
+  # 確定パターン取得
+  confirms = getConfirmTypes(true)
+  for value, index in confirms
+    if value isnt null and value isnt 0
+      confirms[index] = [value]
+    else
+      confirms[index] = null
+
   patterns = []
   for numMimic in [numMimicMin..numMimicMax]
-    patterns = patterns.concat genPattern([cellNum - numMimic, numMimic, 0, 0, 0])
+    patterns = patterns.concat genPattern([cellNum - numMimic, numMimic, 0, 0, 0], confirms)
   validsOnlyMimicResearch = getValidPatterns(condsLight, colors, stockedIndexes, patterns, nums)
   validPatternOnlyMimicResearch = statValidPatterns(validsOnlyMimicResearch)
   console.log 'validsOnlyMimicResearch, validPatternOnlyMimicResearch', validsOnlyMimicResearch, validPatternOnlyMimicResearch
   # アイテム種別を考慮する必要がないか、この時点でミミックが確定できていれば終了
   if not mustConsiderType(conds) or checkMimic(validPatternOnlyMimicResearch, numMimic)
+    console.log 'finished.1.'
     return viewTitle validPatternOnlyMimicResearch
 
-  # 確定パターンがないなら全リセット
+  # より詳細に見る
+  # ありえるtypeCostを作る
+  confirms = getConfirmTypes(false)
+  allowed = Utl.arrayFill confirms.length, []
+  kakuteiTypes = []
+  kakuteiTypes[val] = 0 for val, key of window.CONSTS
+  for dummy, index in allowed
+    # 規定されてる
+    if confirms[index] isnt 0 and confirms[index] isnt null
+      allowed[index].push confirms[index]
+      kakuteiTypes[confirms[index]]++
+    # 先の結果から分かる
+    else
+      if Utl.inArray(window.CONSTS.MIMIC, validPatternOnlyMimicResearch[index])
+        allowed[index].push window.CONSTS.MIMIC
+      if Utl.inArray(window.CONSTS.NOT_MIMIC, validPatternOnlyMimicResearch[index])
+        allowed[index].push window.CONSTS.EQUIP, window.CONSTS.MONEY, window.CONSTS.COMMODITY
+
   valids = []
   for validOnlyMimicResearch in validsOnlyMimicResearch
     numMimic = 0
     for typeConst in validOnlyMimicResearch
       numMimic++ if typeConst is window.CONSTS.MIMIC
     for numEquip in [0..(cellNum - numMimic)]
+      continue if numEquip < kakuteiTypes[window.CONSTS.EQUIP]
       for numMoney in [0..(cellNum - numMimic)]
+        continue if numMoney < kakuteiTypes[window.CONSTS.MONEY]
         for numCommodity in [0..(cellNum - numMimic)]
+          continue if numCommodity < kakuteiTypes[window.CONSTS.COMMODITY]
           continue unless (numMimic + numEquip + numMoney + numCommodity) is cellNum
-          patterns = genPattern([0, numMimic, numEquip, numMoney, numCommodity], validOnlyMimicResearch)
+          patterns = genPattern([0, numMimic, numEquip, numMoney, numCommodity], allowed)
           nums = {}
           nums[window.CONSTS.MIMIC] = [numMimic, numMimic]
           nums[window.CONSTS.EQUIP] = numEquip
@@ -405,9 +435,14 @@ judge = ->
   console.log 'valids, validPattern', valids, validPattern
   # 全探索したので最終回答
   viewTitle validPattern
+  window.alert '条件を満たすパターンがありません' if validPattern is null
+  console.log 'finished.2.'
   
-viewTitle = (views)->
+viewTitle = (views = null)->
   $('td, .title').removeClass('not_mimic mimic money equip commodity unknown')
+  $('.title').html('')
+  return if views is null
+
   for typeConsts, index in views
     [className, html] = 
       if typeConsts.length > 1
@@ -463,14 +498,23 @@ getValidPatterns = (conds, colors, stockedIndexes, patterns, nums)->
   valids
 
 statValidPatterns = (validPatterns)->
-  collects = null
+  collects = []
   for valid in validPatterns
     for type, index in valid
-      if collects is null
-        collects = Utl.arrayFill valid.length, []
+      unless collects[index]?
+        collects[index] = []
       if not Utl.inArray type, collects[index]
         collects[index].push type
   collects
+
+downDementionStat = (stat)->
+  for ary, index in stat
+    if ary.length is 1
+      stat[index] = ary[0]
+    else
+      stat[index] = null
+  ary
+
 
 isValidPattern = (conds, colors, stockedIndexes, pattern, nums)->
   console.log(conds, pattern)
@@ -768,6 +812,18 @@ getNumEquip = ->
   Number $('#num_equip').val()
 getNumCommodity = ->
   Number $('#num_commodity').val()
+# 確定パターンの取得
+getConfirmTypes = (modeNotMimic)->
+  confirms = []
+  $('#field tbody').find('select.kind').each ->
+    val = Number $(@).val()
+    if val is 0
+      confirms.push null
+    else if modeNotMimic and val isnt window.CONSTS.MIMIC
+      confirms.push 0
+    else
+      confirms.push val
+  confirms
 
 genPattern = (ary, pattern = null)->
   # [ミミック以外(オールマイティ), ミミック, 装備, お金, 消費アイテム]
@@ -783,13 +839,10 @@ genPattern = (ary, pattern = null)->
       return true
     for num, index in remain
       continue if num <= 0
-      # 指定のもの以外で埋める
+      # 指定のもの以外は飛ばす
       if pattern isnt null
-        switch pattern[m.length]
-          when window.CONSTS.NOT_MIMIC
-            continue if consts[index] is window.CONSTS.MIMIC
-          when window.CONSTS.MIMIC
-            continue if consts[index] isnt window.CONSTS.MIMIC
+        if pattern[m.length] isnt null and pattern[m.length].length > 0 and not Utl.inArray consts[index], pattern[m.length]
+          continue
 
       newM = Utl.clone m
       newRemain = Utl.clone remain
