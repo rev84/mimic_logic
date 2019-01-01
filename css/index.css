@@ -16,13 +16,27 @@
 }
 .title {
   position: absolute;
-  left:0;
-  top:0;
+  left: 0;
+  top: 0;
   font-size: 120%;
   font-weight: bold;
   background-color: #ffffff;
+  z-index: 999;
+}
+.title_mad {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 120%;
+  font-weight: bold;
+  background-color: #ffffff;
+  z-index: 99;
 }
 .title.mimic {
+  border: double 4px #ff0000;
+  background-color: #ffffff;
+}
+.title_mad.mimic {
   border: double 4px #ff0000;
   background-color: #ffffff;
 }

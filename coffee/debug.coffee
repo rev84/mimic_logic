@@ -1,14 +1,16 @@
 debug = ->
-  conds =  [0, 231, 30, 1440, 50002, 130, 1440, 50001, 0]
-  colors =  [3, 1, 1, 1, 3, 3, 2, 2, 1]
+  conds = [810, 920, 920, 710, 1020, 920]
+  colors = [1, 1, 1, 1, 1, 1]
 
   $('#num_x').val(3)
-  $('#num_y').val(3)
+  $('#num_y').val(2)
 
   reset()
 
   $('#num_mimic_min').val(1)
-  $('#num_mimic_max').val(4)
+  $('#num_mimic_max').val(1)
+  $('#num_mad').val(1)
+  $('#item_detail_on').prop 'checked', false
   $('#num_money').val(0)
   $('#num_equip').val(0)
   $('#num_commodity').val(0)

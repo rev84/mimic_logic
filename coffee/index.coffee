@@ -1,6 +1,6 @@
 window.CONFIG = 
   FIELD_MIN: 2
-  FIELD_MAX: 8
+  FIELD_MAX: 3
 
 window.CONSTS =
   NOT_MIMIC: 0
@@ -262,6 +262,10 @@ cond2cond1 = (cond)->
   null
 
 init = ->
+  $(':checkbox').radiocheck()
+
+  $('#item_detail_on').on 'change', viewDetail
+
   $('#num_x, #num_y').html('')
   for index in [window.CONFIG.FIELD_MIN..window.CONFIG.FIELD_MAX]
     $('#num_x, #num_y').append($('<option>').attr('value', index).html(index))
@@ -270,35 +274,44 @@ init = ->
   $('#num_x, #num_y').on 'change', reset
   $('#judge').on 'click', judge
   $('#clear').on 'click', clear
-  $('#num_mimic_min, #num_mimic_max, #num_money, #num_equip, #num_commodity').on 'change', judge
+  $('#num_mimic_min, #num_mimic_max, #num_mad, #num_money, #num_equip, #num_commodity').on 'change', judge
   reset()
+  viewDetail()
+
+viewDetail = ->
+  if isItemDetail()
+    $('#item_detail').removeClass 'no_display'
+  else
+    $('#item_detail').addClass 'no_display'
 
 clear = ->
   numMimicMin = $('#num_mimic_min').val()
   numMimicMax = $('#num_mimic_max').val()
+  numMad = $('#num_mad').val()
   reset()
   $('#num_mimic_min').val(numMimicMin)
   $('#num_mimic_max').val(numMimicMax)
+  $('#num_mad').val(numMad)
 
 reset = ->
   x = getX()
   y = getY()
   cellNum = getCellNum()
 
-  $('#num_mimic_min, #num_mimic_max, #num_money, #num_equip, #num_commodity').html('')
+  $('#num_mimic_min, #num_mimic_max, #num_mad, #num_money, #num_equip, #num_commodity').html('')
   $('#field tbody').html('')
   for yIndex in [0...y]
     tr = $('<tr>')
     for xIndex in [0...x]
       index = yIndex*x+xIndex
       tr.append getTd(index)
-      $('#num_mimic_min, #num_mimic_max, #num_money, #num_equip, #num_commodity').append($('<option>').html(index).attr('value', index))
+      $('#num_mimic_min, #num_mimic_max, #num_mad, #num_money, #num_equip, #num_commodity').append($('<option>').html(index).attr('value', index))
     $('#field tbody').append tr
   $('#field tbody').find('.box').selectpicker({
     noneSelectedText: ''
     width: 'fit'
   })
-  $('#num_mimic_min, #num_mimic_max, #num_money, #num_equip, #num_commodity').append($('<option>').html(cellNum).attr('value', cellNum))
+  $('#num_mimic_min, #num_mimic_max, #num_mad, #num_money, #num_equip, #num_commodity').append($('<option>').html(cellNum).attr('value', cellNum))
 
 getTd = (index)->
   if window.CACHE.TD_HTML is null
@@ -340,6 +353,7 @@ judge = ->
   cellNum = getCellNum()
   numMimicMin = getNumMimicMin()
   numMimicMax = getNumMimicMax()
+  numMad = getNumMad()
   numMoney = getNumMoney()
   numEquip = getNumEquip()
   numCommodity = getNumCommodity()
@@ -386,13 +400,13 @@ judge = ->
   patterns = []
   for numMimic in [numMimicMin..numMimicMax]
     patterns = patterns.concat genPattern([cellNum - numMimic, numMimic, 0, 0, 0], confirms)
-  validsOnlyMimicResearch = getValidPatterns(condsLight, colors, stockedIndexes, patterns, nums)
-  validPatternOnlyMimicResearch = statValidPatterns(validsOnlyMimicResearch)
-  console.log 'validsOnlyMimicResearch, validPatternOnlyMimicResearch', validsOnlyMimicResearch, validPatternOnlyMimicResearch
+  validsOnlyMimicResearch = getValidPatterns(condsLight, colors, stockedIndexes, patterns, nums, numMad)
+  [validPatternOnlyMimicResearch, madPatternOnlyMimicResearch] = statValidPatterns(validsOnlyMimicResearch)
+  console.log 'validsOnlyMimicResearch, validPatternOnlyMimicResearch, madPatternOnlyMimicResearch', validsOnlyMimicResearch, validPatternOnlyMimicResearch, madPatternOnlyMimicResearch
   # アイテム種別を考慮する必要がないか、この時点でミミックが確定できていれば終了
-  if not mustConsiderType(conds) or checkMimic(validPatternOnlyMimicResearch, numMimic)
+  if not isItemDetail() or not mustConsiderType(conds) or checkMimic(validPatternOnlyMimicResearch, numMimic)
     console.log 'finished.1.'
-    return viewTitle validPatternOnlyMimicResearch
+    return viewTitle validPatternOnlyMimicResearch, madPatternOnlyMimicResearch
 
   # より詳細に見る
   # ありえるtypeCostを作る
@@ -417,30 +431,43 @@ judge = ->
     numMimic = 0
     for typeConst in validOnlyMimicResearch
       numMimic++ if typeConst is window.CONSTS.MIMIC
-    for numEquip in [0..(cellNum - numMimic)]
-      continue if numEquip < kakuteiTypes[window.CONSTS.EQUIP]
-      for numMoney in [0..(cellNum - numMimic)]
-        continue if numMoney < kakuteiTypes[window.CONSTS.MONEY]
-        for numCommodity in [0..(cellNum - numMimic)]
-          continue if numCommodity < kakuteiTypes[window.CONSTS.COMMODITY]
-          continue unless (numMimic + numEquip + numMoney + numCommodity) is cellNum
-          patterns = genPattern([0, numMimic, numEquip, numMoney, numCommodity], allowed)
-          nums = {}
-          nums[window.CONSTS.MIMIC] = [numMimic, numMimic]
-          nums[window.CONSTS.EQUIP] = numEquip
-          nums[window.CONSTS.MONEY] = numMoney
-          nums[window.CONSTS.COMMODITY] = numCommodity
-          valids = valids.concat getValidPatterns(conds, colors, stockedIndexes, patterns, nums)
-  validPattern = statValidPatterns(valids)
-  console.log 'valids, validPattern', valids, validPattern
+
+    # アイテム詳細の指定があるので決め打ち
+    if isItemDetail()
+      patterns = genPattern([0, numMimic, numEquip, numMoney, numCommodity], allowed)
+      nums = {}
+      nums[window.CONSTS.MIMIC] = [numMimic, numMimic]
+      nums[window.CONSTS.EQUIP] = numEquip
+      nums[window.CONSTS.MONEY] = numMoney
+      nums[window.CONSTS.COMMODITY] = numCommodity
+      valids = valids.concat getValidPatterns(conds, colors, stockedIndexes, patterns, nums, numMad)
+      
+    # アイテム詳細の指定がない場合は全パターン
+    else
+      for numEquip in [0..(cellNum - numMimic)]
+        continue if numEquip < kakuteiTypes[window.CONSTS.EQUIP]
+        for numMoney in [0..(cellNum - numMimic)]
+          continue if numMoney < kakuteiTypes[window.CONSTS.MONEY]
+          for numCommodity in [0..(cellNum - numMimic)]
+            continue if numCommodity < kakuteiTypes[window.CONSTS.COMMODITY]
+            continue unless (numMimic + numEquip + numMoney + numCommodity) is cellNum
+            patterns = genPattern([0, numMimic, numEquip, numMoney, numCommodity], allowed)
+            nums = {}
+            nums[window.CONSTS.MIMIC] = [numMimic, numMimic]
+            nums[window.CONSTS.EQUIP] = numEquip
+            nums[window.CONSTS.MONEY] = numMoney
+            nums[window.CONSTS.COMMODITY] = numCommodity
+            valids = valids.concat getValidPatterns(conds, colors, stockedIndexes, patterns, nums, numMad)
+  [validPattern, madPattern] = statValidPatterns(valids)
+  console.log 'valids, validPattern, madPattern', valids, validPattern, madPattern
   # 全探索したので最終回答
   viewTitle validPattern
   window.alert '条件を満たすパターンがありません' if validPattern is null
   console.log 'finished.2.'
   
-viewTitle = (views = null)->
-  $('td, .title').removeClass('not_mimic mimic money equip commodity unknown')
-  $('.title').html('')
+viewTitle = (views = null, mads = null)->
+  $('td, .title, .title_mad').removeClass('not_mimic mimic money equip commodity unknown')
+  $('.title, .title_mad').html('')
   return if views is null
 
   for typeConsts, index in views
@@ -467,6 +494,13 @@ viewTitle = (views = null)->
     $('.title').eq(index).addClass(className).html(html)
     $('td').eq(index).addClass(className)
 
+  # 狂った宝箱判定
+  if mads isnt null
+    for madArray, index in mads
+      if madArray.length is 1 and madArray[0]
+        $('.title_mad').eq(index).addClass('mimic').html('狂った宝箱')
+
+
 # 宝の種別を考慮しないといけないか
 mustConsiderType = (conds)->
   for cond in conds
@@ -490,22 +524,36 @@ checkMimic = (validPattern, numMimicMin, numMimicMax)->
   numMimicMin <= mimic <= numMimicMax
 
 
-getValidPatterns = (conds, colors, stockedIndexes, patterns, nums)->
+getValidPatterns = (conds, colors, stockedIndexes, patterns, nums, numMad)->
   valids = []
   for pattern in patterns
-    res = isValidPattern(conds, colors, stockedIndexes, pattern, nums)
-    valids.push pattern if res
+    # 狂った宝箱がある場合は、狂った宝箱のパターンも全部試す
+    if numMad > 0
+      madPatterns = getPatternMad(numMad, pattern)
+      for madPattern in madPatterns
+        res = isValidPattern(conds, colors, stockedIndexes, pattern, nums, madPattern)
+        valids.push [pattern, madPattern] if res
+    # 狂った宝箱がないから普通に調べる
+    else
+      res = isValidPattern(conds, colors, stockedIndexes, pattern, nums)
+      valids.push [pattern, null] if res
   valids
 
 statValidPatterns = (validPatterns)->
   collects = []
-  for valid in validPatterns
+  mads = []
+  for [valid, madPattern] in validPatterns
     for type, index in valid
       unless collects[index]?
         collects[index] = []
+      unless mads[index]?
+        mads[index] = []
       if not Utl.inArray type, collects[index]
         collects[index].push type
-  collects
+      # 狂った宝箱の可能性
+      if madPattern isnt null and not Utl.inArray madPattern[index], mads[index]
+        mads[index].push madPattern[index]
+  [collects, mads]
 
 downDementionStat = (stat)->
   for ary, index in stat
@@ -516,10 +564,12 @@ downDementionStat = (stat)->
   ary
 
 
-isValidPattern = (conds, colors, stockedIndexes, pattern, nums)->
-  console.log(conds, pattern)
+isValidPattern = (conds, colors, stockedIndexes, pattern, nums, madPattern = null)->
+  console.log('conds, pattern, madPattern', conds, pattern, madPattern)
   for cond, index in conds
     isMimic = pattern[index] is window.CONSTS.MIMIC
+    isMad = madPattern isnt null and madPattern[index]
+    isTurn = isMimic or isMad # 最終的に反転するか
     res = switch cond
       # ある宝箱の隣にミミックがいる
       when 710,810,910,1010 then isContainType(pattern, stockedIndexes.NEAR[index][cond // 100 % 6], window.CONSTS.MIMIC, nums)
@@ -615,10 +665,14 @@ isValidPattern = (conds, colors, stockedIndexes, pattern, nums)->
       # この中にミミックはn匹いる
       when 50001,50002,50003,50004,50005,50006,50007,50008,50009 then isContainTypeCount(pattern, [0...pattern.length], window.CONSTS.MIMIC, cond % 10, nums)
 
-      else (isMimic = false) or true
-      
-    res = not res if isMimic
-    console.log(cond, res)
+      else 
+        isTurn = false
+        true
+    
+    # ミミックか狂った宝箱なら反転
+    if isTurn
+      res = not res 
+    console.log('cond, condBool, isMimic, isMad', cond, res, isMimic, isMad)
     return false unless res
   true
 
@@ -806,6 +860,10 @@ getNumMimicMin = ->
   Number $('#num_mimic_min').val()
 getNumMimicMax = ->
   Number $('#num_mimic_max').val()
+getNumMad = ->
+  Number $('#num_mad').val()
+isItemDetail = ->
+  $('#item_detail_on').prop 'checked'
 getNumMoney = ->
   Number $('#num_money').val()
 getNumEquip = ->
@@ -852,4 +910,25 @@ genPattern = (ary, pattern = null)->
 
   getPatternFunc([], remain)
   console.log 'genPattern 組み合わせ:', ary, pattern, all
+  all
+
+getPatternMad = (numMad, pattern)->
+  # 狂った宝箱なし
+  return null if numMad <= 0
+
+  all = []
+  getPatternFunc = (m, remain)->
+    if m.length is pattern.length
+      all.push m if remain is 0
+      return true
+    for bool in [true, false]
+      continue if bool and remain <= 0
+      continue if bool and pattern[m.length] is window.CONSTS.MIMIC
+      newM = Utl.clone m
+      newRemain = if bool then remain - 1 else remain
+      newM.push bool
+      getPatternFunc(newM, newRemain)
+
+  getPatternFunc([], numMad)
+  console.log 'getPatternMad 組み合わせ:', numMad, pattern, all
   all

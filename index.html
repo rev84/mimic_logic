@@ -70,7 +70,7 @@
 </nav>
 
 <div class="container">
-  <p class="form-inline">
+  <p class="form-inline checkbox-inline">
     <button class="btn btn-hg btn-primary" id="judge">判定</button>
     <button class="btn btn-hg btn-warning" id="clear">クリア</button>
     サイズ
@@ -86,15 +86,28 @@
     ～
     <select class="form-control size" id="num_mimic_max">
     </select>
-    お金
-    <select class="form-control size" id="num_money">
+    狂った宝箱
+    <select class="form-control size" id="num_mad">
     </select>
-    装備品
-    <select class="form-control size" id="num_equip">
-    </select>
-    消費アイテム
-    <select class="form-control size" id="num_commodity">
-    </select>
+
+    <br>
+
+    <label class="checkbox checkbox-inline">
+      <input type="checkbox" class="checkbox" id="item_detail_on">
+      アイテムの詳細
+    </label>
+
+    <span id="item_detail">
+      お金
+      <select class="form-control size" id="num_money">
+      </select>
+      装備品
+      <select class="form-control size" id="num_equip">
+      </select>
+      消費アイテム
+      <select class="form-control size" id="num_commodity">
+      </select>
+    </span>
   </p>
 
 
@@ -107,6 +120,7 @@
 <div class="no_display">
   <div id="cell_sample">
     <div class="title"></div>
+    <div class="title_mad"></div>
     <select class="box">
       <option value="0"></option>
       <option value="1" data-content="<img src='./image/red.png'>"></option>
