@@ -273,21 +273,19 @@ onPasteImage = (e)->
   fr = new FileReader
   fr.onload = (e) ->
     base64 = e.target.result
-    img = new Image()
-    img.onload = (e)->
-      canvas = document.createElement('canvas')
-      [canvas.width, canvas.height] = [imageObj.width, imageObj.height]
-      ctx = canvas.getContext('2d')
-      ctx.drawImage imageObj, 0, 0
-      ctx.getImageData(0, 0, canvas.width, canvas.height)
-      window.parseImage ctx
-    img.src = base64
-    console.log 'image:', base64
-    return
+    window.parseImage base64
   fr.readAsDataURL imageFile
   return true
 
-parseImage = (ctx)->
+parseImage = (base64)->
+  img = new ImageFileMimicLogic base64
+  callback = ->
+    unless img.isLoaded()
+      setTimeout callback, 1000
+      return
+    console.log img.getLeftUpPoint()
+    
+  setTimeout callback, 1000
 
 
 cond2cond1 = (cond)->
