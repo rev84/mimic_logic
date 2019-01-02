@@ -254,6 +254,41 @@ $().ready ->
   init()
   debug()
 
+onPasteImage = (e)->
+  # ブラウザによる貼り付けは無効
+  e.preventDefault()
+
+  console.log '画像貼付:', e
+  clipboardData = e.originalEvent.clipboardData
+  return true if !clipboardData
+  return true if !clipboardData.types
+  indexOfFiles = false
+  for type, index in clipboardData.types
+    if type is 'Files'
+      indexOfFiles = index
+      break
+  return true if indexOfFiles is false
+
+  imageFile = clipboardData.items[indexOfFiles].getAsFile()
+  fr = new FileReader
+  fr.onload = (e) ->
+    base64 = e.target.result
+    img = new Image()
+    img.onload = (e)->
+      canvas = document.createElement('canvas')
+      [canvas.width, canvas.height] = [imageObj.width, imageObj.height]
+      ctx = canvas.getContext('2d')
+      ctx.drawImage imageObj, 0, 0
+      ctx.getImageData(0, 0, canvas.width, canvas.height)
+      window.parseImage ctx
+    img.src = base64
+    console.log 'image:', base64
+    return
+  fr.readAsDataURL imageFile
+  return true
+
+parseImage = (ctx)->
+
 
 cond2cond1 = (cond)->
   for cond1, obj of window.CONDS
@@ -264,6 +299,7 @@ cond2cond1 = (cond)->
 init = ->
   $(':checkbox').radiocheck()
 
+  $('#image_paste').on 'paste', onPasteImage
   $('#item_detail_on').on 'change', viewDetail
 
   $('#num_x, #num_y').html('')
