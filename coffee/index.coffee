@@ -23,9 +23,12 @@ window.DIRECTIONS =
 window.CONDS = 
   'Zzz...':
     0: 'Zzz...'
-  'ミミック2匹以上が縦か横で隣あった位置に':
+  'ミミック2匹が縦か横で隣あった位置に':
     1100: 'いる'
     1110: 'はいない'
+  'ミミック2匹以上が縦か横で隣あった位置に':
+    1101: 'いる'
+    1111: 'はいない'
   '上の宝箱は':
     710: 'ミミックだ'
     720: 'ミミックじゃない'
@@ -71,11 +74,13 @@ window.CONDS =
     32: 'ミミックは2匹いる'
     33: 'ミミックは3匹いる'
     34: 'ミミックは4匹いる'
+    ###
     35: 'ミミックは5匹いる'
     36: 'ミミックは6匹いる'
     37: 'ミミックは7匹いる'
     38: 'ミミックは8匹いる'
     39: 'ミミックは9匹いる'
+    ###
   '青い宝箱のなかに':
     110: 'ミミックがいるよ'
     120: 'ミミックはいないよ'
@@ -85,11 +90,13 @@ window.CONDS =
     132: 'ミミックは2匹いる'
     133: 'ミミックは3匹いる'
     134: 'ミミックは4匹いる'
+    ###
     135: 'ミミックは5匹いる'
     136: 'ミミックは6匹いる'
     137: 'ミミックは7匹いる'
     138: 'ミミックは8匹いる'
     139: 'ミミックは9匹いる'
+    ###
   '黒い宝箱のなかに':
     210: 'ミミックがいるよ'
     220: 'ミミックはいないよ'
@@ -99,11 +106,13 @@ window.CONDS =
     232: 'ミミックは2匹いる'
     233: 'ミミックは3匹いる'
     234: 'ミミックは4匹いる'
+    ###
     235: 'ミミックは5匹いる'
     236: 'ミミックは6匹いる'
     237: 'ミミックは7匹いる'
     238: 'ミミックは8匹いる'
     239: 'ミミックは9匹いる'
+    ###
   '一番上の列':
     310: 'にミミックがいるよ'
     320: 'にミミックはいないよ'
@@ -149,9 +158,11 @@ window.CONDS =
     1320: '右の方がミミックが多い'
     1330: 'ミミックの数は同じ'
   '赤宝箱と':
+    ###
     1410: '青宝箱は、赤宝箱の方がミミックが多い'
     1420: '青宝箱は、青宝箱の方がミミックが多い'
     1421: '青宝箱のミミックの数は同じ'
+    ###
     1430: '黒宝箱は、赤宝箱の方がミミックが多い'
     1440: '黒宝箱は、黒宝箱の方がミミックが多い'
     1441: '黒宝箱のミミックの数は同じ'
@@ -159,9 +170,12 @@ window.CONDS =
     1510: '赤宝箱は、青宝箱の方がミミックが多い'
     1520: '赤宝箱は、赤宝箱の方がミミックが多い'
     1521: '赤宝箱のミミックの数は同じ'
+    ###
     1530: '黒宝箱は、青宝箱の方がミミックが多い'
     1540: '黒宝箱は、黒宝箱の方がミミックが多い'
     1541: '黒宝箱のミミックの数は同じ'
+    ###
+  ###
   '黒宝箱と':
     1610: '赤宝箱は、黒宝箱の方がミミックが多い'
     1620: '赤宝箱は、赤宝箱の方がミミックが多い'
@@ -169,34 +183,35 @@ window.CONDS =
     1630: '青宝箱は、黒宝箱の方がミミックが多い'
     1640: '青宝箱は、青宝箱の方がミミックが多い'
     1641: '青宝箱のミミックの数は同じ'
+  ###
   '私は':
     1700: 'ミミックじゃない'
   '赤い宝箱の':
-    1811: '上にミミックがいる'
+    #1811: '上にミミックがいる'
     1821: '上にミミックはいない'
-    1812: '下にミミックがいる'
+    #1812: '下にミミックがいる'
     1822: '下にミミックはいない'
-    1813: '左にミミックがいる'
+    #1813: '左にミミックがいる'
     1823: '左にミミックはいない'
-    1814: '右にミミックがいる'
+    #1814: '右にミミックがいる'
     1824: '右にミミックはいない'
   '青い宝箱の':
-    1911: '上にミミックがいる'
+    #1911: '上にミミックがいる'
     1921: '上にミミックはいない'
-    1912: '下にミミックがいる'
+    #1912: '下にミミックがいる'
     1922: '下にミミックはいない'
-    1913: '左にミミックがいる'
+    #1913: '左にミミックがいる'
     1923: '左にミミックはいない'
-    1914: '右にミミックがいる'
+    #1914: '右にミミックがいる'
     1924: '右にミミックはいない'
   '黒い宝箱の':
-    2011: '上にミミックがいる'
+    #2011: '上にミミックがいる'
     2021: '上にミミックはいない'
-    2012: '下にミミックがいる'
+    #2012: '下にミミックがいる'
     2022: '下にミミックはいない'
-    2013: '左にミミックがいる'
+    #2013: '左にミミックがいる'
     2023: '左にミミックはいない'
-    2014: '右にミミックがいる'
+    #2014: '右にミミックがいる'
     2024: '右にミミックはいない'
   'ミミックの':
     2111: '上に赤い宝箱がある'
@@ -250,7 +265,10 @@ window.CONDS =
 window.CACHE =
   TD_HTML: null
 
-window.COND2IMAGE_FILE = {}
+window.COND_IMAGE_FILES = {}
+window.TREASUREBOX_IMAGE_FILES = {}
+
+window.IS_WAIT = false
 
 $().ready ->
   init()
@@ -258,11 +276,10 @@ $().ready ->
   debug()
 
 initImage = ->
-  images = {}
   onload = (index, img)->
-    window.COND2IMAGE_FILE[index] = new ImageFileMimicLogic(img, ImageFileMimicLogic.MODE.IMAGE)
+    window.COND_IMAGE_FILES[index] = new ImageFileMimicLogic(img, ImageFileMimicLogic.MODE.IMAGE)
   onerror = (index)->
-    window.COND2IMAGE_FILE[index] = null
+    window.COND_IMAGE_FILES[index] = null
   for key, val of window.CONDS
     for condIndex, condText of val
       image = new Image()
@@ -270,11 +287,22 @@ initImage = ->
       image.onerror = onerror.bind(image, condIndex)
       image.src = './image/conds/'+condIndex+'.png'
 
+  onload = (index, img)->
+    window.TREASUREBOX_IMAGE_FILES[index] = new ImageFileMimicLogic(img, ImageFileMimicLogic.MODE.IMAGE)
+  onerror = (index)->
+    window.TREASUREBOX_IMAGE_FILES[index] = null
+  for key, fileName of {RED: 'red.png', BLUE: 'blue.png', BLACK: 'black.png'}
+    image = new Image()
+    image.onload = onload.bind(image, key, image)
+    image.onerror = onerror.bind(image, key)
+    image.src = './image/treasureboxes/'+fileName
+
 onPasteImage = (e)->
   # ブラウザによる貼り付けは無効
   e.preventDefault()
 
   console.log '画像貼付:', e
+
   clipboardData = e.originalEvent.clipboardData
   return true if !clipboardData
   return true if !clipboardData.types
@@ -289,14 +317,62 @@ onPasteImage = (e)->
   fr = new FileReader
   fr.onload = (e) ->
     base64 = e.target.result
-    #window.parseImage base64
-    window.parseImageDebug base64
+    window.parseImage base64
+    #window.parseImageDebug base64
   fr.readAsDataURL imageFile
   return true
 
 parseImage = (base64)->
+  img = new ImageFileMimicLogic base64
+  callback = ->
+    unless img.isLoaded()
+      setTimeout callback, 100
+      return
+    window.IS_WAIT = true
 
+    [points, wField, hField] = img.getLeftUpPoint()
+    console.log 'points:', points
 
+    mimicMin = $('#num_mimic_min').val()
+    mimicMax = $('#num_mimic_max').val()
+    mimicMad = $('#num_mad').val()
+    $('#num_x').val(wField)
+    $('#num_y').val(hField)
+
+    reset()
+
+    $('#num_mimic_min').val(mimicMin)
+    $('#num_mimic_max').val(mimicMax)
+    $('#num_mad').val(mimicMad)
+
+    for point, pointIndex in points
+      # 吹き出し領域のキャンバス
+      canvas = document.createElement('canvas')
+      [canvas.width, canvas.height] = [point.w, point.h]
+      canvas.getContext('2d').drawImage img.canvas, point.x, point.y, point.w, point.h, 0, 0, point.w, point.h
+      imageFile = new ImageFileMimicLogic canvas, ImageFileMimicLogic.MODE.CANVAS
+      # 比較
+      matchRates = []
+      for condIndex, targetImageFile of window.COND_IMAGE_FILES
+        continue if targetImageFile is null
+        matchRates.push [condIndex, imageFile.getMatchRate targetImageFile]
+      matchRates.sort (a, b)-> b[1] - a[1]
+      console.log 'matchRates['+pointIndex+']', matchRates
+
+      # 条件文はこれ
+      cond = matchRates[0][0]
+      $('.cond1').eq(point.index).val(cond2cond1(cond))
+      changeCond2.bind($('.cond1').eq(point.index))()
+      $('.cond2').eq(point.index).val(cond)
+
+      # 色
+      $('select.box').eq(point.index).selectpicker('val', point.color)
+
+      window.IS_WAIT = false
+
+    console.log 'finished.parseImage'
+    judge()
+  setTimeout callback, 100
 
 cond2cond1 = (cond)->
   for cond1, obj of window.CONDS
@@ -391,6 +467,8 @@ changeCond2 = ->
   cond2.append op for op in options
 
 judge = ->
+  return if window.IS_WAIT
+
   viewTitle(null)
   x = getX()
   y = getY()
@@ -647,9 +725,9 @@ isValidPattern = (conds, colors, stockedIndexes, pattern, nums, madPattern = nul
 
       # ミミック同士は隣り合った位置に
       # いる
-      when 1100 then isMimicNearly(pattern, stockedIndexes.NEAR)
+      when 1100,1101 then isMimicNearly(pattern, stockedIndexes.NEAR)
       # いない
-      when 1110 then not isMimicNearly(pattern, stockedIndexes.NEAR)
+      when 1110,1111 then not isMimicNearly(pattern, stockedIndexes.NEAR)
       
       # 上の列と下の列は
       # 上の列の方がミミックが多い

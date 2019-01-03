@@ -53,7 +53,7 @@ parseImageDebug = function(base64) {
       return;
     }
     leftups = img.getLeftUpPoint();
-    console.log(leftups);
+    console.log('leftups:', leftups);
     for (j = 0, len = leftups.length; j < len; j++) {
       [x, y, w, h] = leftups[j];
       [canvas, ctx] = putCanvas(w, h);
@@ -61,7 +61,7 @@ parseImageDebug = function(base64) {
       imageFile = new ImageFileMimicLogic(canvas, ImageFileMimicLogic.MODE.IMAGE);
       $('#debug_image_paste').append($('<img>').attr('src', imageFile.getBase64BinarizeCond()));
       matchRates = [];
-      ref = window.COND2IMAGE_FILE;
+      ref = window.COND_IMAGE_FILES;
       for (condIndex in ref) {
         targetImageFile = ref[condIndex];
         if (targetImageFile === null) {
@@ -85,7 +85,7 @@ parseImageDebug = function(base64) {
         html += '<td>' + condIndex + '</td>';
         html += '<td class="right">' + rate + '</td>';
         if (window.COND2IMAGE_FILE[condIndex]) {
-          html += '<td><img src="' + window.COND2IMAGE_FILE[condIndex].getBase64BinarizeCond() + '"></td>';
+          html += '<td><img src="' + window.COND_IMAGE_FILES[condIndex].getBase64BinarizeCond() + '"></td>';
         }
         html += '</tr>';
       }
@@ -94,7 +94,7 @@ parseImageDebug = function(base64) {
     // ないやつを出す
     $('#debug_image_paste').append($('<h2>').html('まだないやつ'));
     tb = $('<table>');
-    ref1 = window.COND2IMAGE_FILE;
+    ref1 = window.COND_IMAGE_FILES;
     for (index in ref1) {
       obj = ref1[index];
       if (obj === null) {
@@ -358,9 +358,77 @@ ImageFileMimicLogic = class ImageFileMimicLogic extends ImageFile {
     return this.myBinarizeCond;
   }
 
+  // 宝箱の位置検出
+  getTreasureboxPoints(treasureboxImageFiles) {
+    var SCORE_LIMIT, baseRgb, baseX, baseY, color, hField, imageFile, j, key, l, len, o, q, r, ref, ref1, ref2, ref3, rgb, score, scores, treasureboxes, wField, x, xs, y, ys;
+    baseRgb = this.getRgb();
+    treasureboxes = [];
+    scores = [];
+//scores = Utl.array2dFill baseRgb.length, baseRgb[0].length, 0
+    for (key in treasureboxImageFiles) {
+      imageFile = treasureboxImageFiles[key];
+      SCORE_LIMIT = (imageFile.getWidth() * imageFile.getHeight() * 255 * 3) * 0.075; // このスコア以上行った時点で探索打ち切り
+      rgb = imageFile.getRgb();
+      for (baseX = j = 0, ref = baseRgb.length; (0 <= ref ? j < ref : j > ref); baseX = 0 <= ref ? ++j : --j) {
+        if (baseRgb.length <= baseX + imageFile.getWidth()) {
+          continue;
+        }
+        for (baseY = l = 0, ref1 = baseRgb[baseX].length; (0 <= ref1 ? l < ref1 : l > ref1); baseY = 0 <= ref1 ? ++l : --l) {
+          if (baseRgb[baseX].length <= baseY + imageFile.getHeight()) {
+            continue;
+          }
+          score = 0;
+          for (x = o = 0, ref2 = rgb.length; (0 <= ref2 ? o < ref2 : o > ref2); x = 0 <= ref2 ? ++o : --o) {
+            for (y = q = 0, ref3 = rgb[x].length; (0 <= ref3 ? q < ref3 : q > ref3); y = 0 <= ref3 ? ++q : --q) {
+              score += Math.abs(baseRgb[baseX + x][baseY + y].r - rgb[x][y].r);
+              score += Math.abs(baseRgb[baseX + x][baseY + y].g - rgb[x][y].g);
+              score += Math.abs(baseRgb[baseX + x][baseY + y].b - rgb[x][y].b);
+            }
+            // 行き過ぎなので打ち切り
+            if (SCORE_LIMIT < score) {
+              score = Number.MAX_SAFE_INTEGER;
+              break;
+            }
+          }
+          // スコアがしきい値以内なので追加
+          if (score <= SCORE_LIMIT) {
+            scores.push([baseX, baseY, window.COLORS[key], score]);
+          }
+        }
+      }
+    }
+    //console.log 'SCORE_LIMIT:',SCORE_LIMIT
+    //scores[baseX][baseY] = [baseX, baseY, key, score]
+
+    // このソートでindexに対応
+    scores.sort(function(a, b) {
+      y = a[1] - b[1];
+      if (y !== 0) {
+        return y;
+      }
+      return a[0] - b[0];
+    });
+    // フィールドの横・縦幅を取得
+    xs = [];
+    ys = [];
+    for (r = 0, len = scores.length; r < len; r++) {
+      [x, y, color, score] = scores[r];
+      if (!Utl.inArray(x, xs)) {
+        xs.push(x);
+      }
+      if (!Utl.inArray(y, ys)) {
+        ys.push(y);
+      }
+    }
+    wField = xs.length;
+    hField = ys.length;
+    console.log('scores:', scores);
+    return [scores, wField, hField];
+  }
+
   // 吹き出しの左上の座標を取得
   getLeftUpPoint() {
-    var COUNT_MIN, MARGIN_WIDTH, baseCount, baseIndex, baseX, baseY, count, inArrayNear, isWhite, j, l, myBinaryBorder, o, q, ref, ref1, ref2, ref3, ref4, results, startPoints, targetCount, targetIndex, targetX, targetY, usedStartPoints, x, xStart, y;
+    var COUNT_MIN, MARGIN_WIDTH, baseCount, baseIndex, baseX, baseY, colorId, count, decidedIndex, decidedIndexes, hField, inArrayNear, isDecided, isWhite, j, l, len, len1, myBinaryBorder, nearScores, nearestIndex, o, q, r, ref, ref1, ref2, ref3, ref4, ref5, resultIndex, results, s, startPoints, t, targetCount, targetIndex, targetX, targetY, treasureIndex, treasurePoints, treasureX, treasureY, usedStartPoints, wField, x, xStart, y;
     // 横棒と認識する最低の長さ
     COUNT_MIN = 20;
     // 吹き出しの丸い部分の横幅
@@ -419,7 +487,8 @@ ImageFileMimicLogic = class ImageFileMimicLogic extends ImageFile {
       }
       return a[0] - b[0];
     });
-    console.log('startPoints:', startPoints);
+    //console.log 'startPoints:', startPoints
+
     // startPointsを2つずつ選んで組をつくる
     results = [];
     usedStartPoints = Utl.arrayFill(startPoints.length, false);
@@ -434,13 +503,58 @@ ImageFileMimicLogic = class ImageFileMimicLogic extends ImageFile {
           continue;
         }
         if ((baseX - 2 <= targetX && targetX <= baseX + 2) && baseY < targetY) {
-          results.push([baseX - MARGIN_WIDTH, baseY, baseCount + MARGIN_WIDTH * 2, targetY - baseY]);
+          results.push({
+            x: baseX - MARGIN_WIDTH,
+            y: baseY,
+            w: baseCount + MARGIN_WIDTH * 2,
+            h: targetY - baseY,
+            index: 0
+          });
           usedStartPoints[baseIndex] = usedStartPoints[targetIndex] = true;
           break;
         }
       }
     }
-    return results;
+    // 宝箱の位置検出
+    [treasurePoints, wField, hField] = this.getTreasureboxPoints(window.TREASUREBOX_IMAGE_FILES);
+    // 宝箱の情報から、吹き出しのインデックスを特定
+    decidedIndexes = Utl.arrayFill(results.length, false);
+    for (treasureIndex = r = 0, len = treasurePoints.length; r < len; treasureIndex = ++r) {
+      [treasureX, treasureY, colorId] = treasurePoints[treasureIndex];
+      nearScores = [];
+      for (decidedIndex = s = 0, ref5 = decidedIndexes.length; (0 <= ref5 ? s < ref5 : s > ref5); decidedIndex = 0 <= ref5 ? ++s : --s) {
+        nearScores[decidedIndex] = {
+          index: decidedIndex,
+          score: Number.MAX_SAFE_INTEGER
+        };
+      }
+      for (resultIndex = t = 0, len1 = decidedIndexes.length; t < len1; resultIndex = ++t) {
+        isDecided = decidedIndexes[resultIndex];
+        if (isDecided) {
+          // もう決定済み
+          continue;
+        }
+        if (treasureX < results[resultIndex].x || treasureY < results[resultIndex].y) {
+          // 宝箱より右や下の吹き出しはありえない
+          continue;
+        }
+        nearScores[resultIndex].score = Math.abs(treasureX - results[resultIndex].x) + Math.abs(treasureY - results[resultIndex].y);
+      }
+      // ソートして一番距離が短いもの
+      nearScores.sort(function(a, b) {
+        return a.score - b.score;
+      });
+      // これが対応する吹き出しのインデックス
+      nearestIndex = nearScores[0].index;
+      results[nearestIndex].index = treasureIndex;
+      results[nearestIndex].color = colorId;
+      decidedIndexes[nearestIndex] = true;
+    }
+    // 確定したインデックス順に並べ替える
+    results.sort(function(a, b) {
+      return a.index - b.index;
+    });
+    return [results, wField, hField];
   }
 
 };
@@ -475,9 +589,13 @@ window.CONDS = {
   'Zzz...': {
     0: 'Zzz...'
   },
-  'ミミック2匹以上が縦か横で隣あった位置に': {
+  'ミミック2匹が縦か横で隣あった位置に': {
     1100: 'いる',
     1110: 'はいない'
+  },
+  'ミミック2匹以上が縦か横で隣あった位置に': {
+    1101: 'いる',
+    1111: 'はいない'
   },
   '上の宝箱は': {
     710: 'ミミックだ',
@@ -528,13 +646,15 @@ window.CONDS = {
     31: 'ミミックは1匹いる',
     32: 'ミミックは2匹いる',
     33: 'ミミックは3匹いる',
-    34: 'ミミックは4匹いる',
-    35: 'ミミックは5匹いる',
-    36: 'ミミックは6匹いる',
-    37: 'ミミックは7匹いる',
-    38: 'ミミックは8匹いる',
-    39: 'ミミックは9匹いる'
+    34: 'ミミックは4匹いる'
   },
+  /*
+  35: 'ミミックは5匹いる'
+  36: 'ミミックは6匹いる'
+  37: 'ミミックは7匹いる'
+  38: 'ミミックは8匹いる'
+  39: 'ミミックは9匹いる'
+  */
   '青い宝箱のなかに': {
     110: 'ミミックがいるよ',
     120: 'ミミックはいないよ'
@@ -544,13 +664,15 @@ window.CONDS = {
     131: 'ミミックは1匹いる',
     132: 'ミミックは2匹いる',
     133: 'ミミックは3匹いる',
-    134: 'ミミックは4匹いる',
-    135: 'ミミックは5匹いる',
-    136: 'ミミックは6匹いる',
-    137: 'ミミックは7匹いる',
-    138: 'ミミックは8匹いる',
-    139: 'ミミックは9匹いる'
+    134: 'ミミックは4匹いる'
   },
+  /*
+  135: 'ミミックは5匹いる'
+  136: 'ミミックは6匹いる'
+  137: 'ミミックは7匹いる'
+  138: 'ミミックは8匹いる'
+  139: 'ミミックは9匹いる'
+  */
   '黒い宝箱のなかに': {
     210: 'ミミックがいるよ',
     220: 'ミミックはいないよ'
@@ -560,13 +682,15 @@ window.CONDS = {
     231: 'ミミックは1匹いる',
     232: 'ミミックは2匹いる',
     233: 'ミミックは3匹いる',
-    234: 'ミミックは4匹いる',
-    235: 'ミミックは5匹いる',
-    236: 'ミミックは6匹いる',
-    237: 'ミミックは7匹いる',
-    238: 'ミミックは8匹いる',
-    239: 'ミミックは9匹いる'
+    234: 'ミミックは4匹いる'
   },
+  /*
+  235: 'ミミックは5匹いる'
+  236: 'ミミックは6匹いる'
+  237: 'ミミックは7匹いる'
+  238: 'ミミックは8匹いる'
+  239: 'ミミックは9匹いる'
+  */
   '一番上の列': {
     310: 'にミミックがいるよ',
     320: 'にミミックはいないよ',
@@ -618,9 +742,11 @@ window.CONDS = {
     1330: 'ミミックの数は同じ'
   },
   '赤宝箱と': {
-    1410: '青宝箱は、赤宝箱の方がミミックが多い',
-    1420: '青宝箱は、青宝箱の方がミミックが多い',
-    1421: '青宝箱のミミックの数は同じ',
+    /*
+    1410: '青宝箱は、赤宝箱の方がミミックが多い'
+    1420: '青宝箱は、青宝箱の方がミミックが多い'
+    1421: '青宝箱のミミックの数は同じ'
+    */
     1430: '黒宝箱は、赤宝箱の方がミミックが多い',
     1440: '黒宝箱は、黒宝箱の方がミミックが多い',
     1441: '黒宝箱のミミックの数は同じ'
@@ -628,50 +754,53 @@ window.CONDS = {
   '青宝箱と': {
     1510: '赤宝箱は、青宝箱の方がミミックが多い',
     1520: '赤宝箱は、赤宝箱の方がミミックが多い',
-    1521: '赤宝箱のミミックの数は同じ',
-    1530: '黒宝箱は、青宝箱の方がミミックが多い',
-    1540: '黒宝箱は、黒宝箱の方がミミックが多い',
-    1541: '黒宝箱のミミックの数は同じ'
+    1521: '赤宝箱のミミックの数は同じ'
   },
-  '黒宝箱と': {
-    1610: '赤宝箱は、黒宝箱の方がミミックが多い',
-    1620: '赤宝箱は、赤宝箱の方がミミックが多い',
-    1621: '赤宝箱のミミックの数は同じ',
-    1630: '青宝箱は、黒宝箱の方がミミックが多い',
-    1640: '青宝箱は、青宝箱の方がミミックが多い',
-    1641: '青宝箱のミミックの数は同じ'
-  },
+  /*
+  1530: '黒宝箱は、青宝箱の方がミミックが多い'
+  1540: '黒宝箱は、黒宝箱の方がミミックが多い'
+  1541: '黒宝箱のミミックの数は同じ'
+  */
+  /*
+  '黒宝箱と':
+  1610: '赤宝箱は、黒宝箱の方がミミックが多い'
+  1620: '赤宝箱は、赤宝箱の方がミミックが多い'
+  1621: '赤宝箱のミミックの数は同じ'
+  1630: '青宝箱は、黒宝箱の方がミミックが多い'
+  1640: '青宝箱は、青宝箱の方がミミックが多い'
+  1641: '青宝箱のミミックの数は同じ'
+  */
   '私は': {
     1700: 'ミミックじゃない'
   },
   '赤い宝箱の': {
-    1811: '上にミミックがいる',
+    //1811: '上にミミックがいる'
     1821: '上にミミックはいない',
-    1812: '下にミミックがいる',
+    //1812: '下にミミックがいる'
     1822: '下にミミックはいない',
-    1813: '左にミミックがいる',
+    //1813: '左にミミックがいる'
     1823: '左にミミックはいない',
-    1814: '右にミミックがいる',
+    //1814: '右にミミックがいる'
     1824: '右にミミックはいない'
   },
   '青い宝箱の': {
-    1911: '上にミミックがいる',
+    //1911: '上にミミックがいる'
     1921: '上にミミックはいない',
-    1912: '下にミミックがいる',
+    //1912: '下にミミックがいる'
     1922: '下にミミックはいない',
-    1913: '左にミミックがいる',
+    //1913: '左にミミックがいる'
     1923: '左にミミックはいない',
-    1914: '右にミミックがいる',
+    //1914: '右にミミックがいる'
     1924: '右にミミックはいない'
   },
   '黒い宝箱の': {
-    2011: '上にミミックがいる',
+    //2011: '上にミミックがいる'
     2021: '上にミミックはいない',
-    2012: '下にミミックがいる',
+    //2012: '下にミミックがいる'
     2022: '下にミミックはいない',
-    2013: '左にミミックがいる',
+    //2013: '左にミミックがいる'
     2023: '左にミミックはいない',
-    2014: '右にミミックがいる',
+    //2014: '右にミミックがいる'
     2024: '右にミミックはいない'
   },
   'ミミックの': {
@@ -735,7 +864,11 @@ window.CACHE = {
   TD_HTML: null
 };
 
-window.COND2IMAGE_FILE = {};
+window.COND_IMAGE_FILES = {};
+
+window.TREASUREBOX_IMAGE_FILES = {};
+
+window.IS_WAIT = false;
 
 $().ready(function() {
   init();
@@ -744,30 +877,42 @@ $().ready(function() {
 });
 
 initImage = function() {
-  var condIndex, condText, image, images, key, onerror, onload, ref, results1, val;
-  images = {};
+  var condIndex, condText, fileName, image, key, onerror, onload, ref, ref1, results1, val;
   onload = function(index, img) {
-    return window.COND2IMAGE_FILE[index] = new ImageFileMimicLogic(img, ImageFileMimicLogic.MODE.IMAGE);
+    return window.COND_IMAGE_FILES[index] = new ImageFileMimicLogic(img, ImageFileMimicLogic.MODE.IMAGE);
   };
   onerror = function(index) {
-    return window.COND2IMAGE_FILE[index] = null;
+    return window.COND_IMAGE_FILES[index] = null;
   };
   ref = window.CONDS;
-  results1 = [];
   for (key in ref) {
     val = ref[key];
-    results1.push((function() {
-      var results2;
-      results2 = [];
-      for (condIndex in val) {
-        condText = val[condIndex];
-        image = new Image();
-        image.onload = onload.bind(image, condIndex, image);
-        image.onerror = onerror.bind(image, condIndex);
-        results2.push(image.src = './image/conds/' + condIndex + '.png');
-      }
-      return results2;
-    })());
+    for (condIndex in val) {
+      condText = val[condIndex];
+      image = new Image();
+      image.onload = onload.bind(image, condIndex, image);
+      image.onerror = onerror.bind(image, condIndex);
+      image.src = './image/conds/' + condIndex + '.png';
+    }
+  }
+  onload = function(index, img) {
+    return window.TREASUREBOX_IMAGE_FILES[index] = new ImageFileMimicLogic(img, ImageFileMimicLogic.MODE.IMAGE);
+  };
+  onerror = function(index) {
+    return window.TREASUREBOX_IMAGE_FILES[index] = null;
+  };
+  ref1 = {
+    RED: 'red.png',
+    BLUE: 'blue.png',
+    BLACK: 'black.png'
+  };
+  results1 = [];
+  for (key in ref1) {
+    fileName = ref1[key];
+    image = new Image();
+    image.onload = onload.bind(image, key, image);
+    image.onerror = onerror.bind(image, key);
+    results1.push(image.src = './image/treasureboxes/' + fileName);
   }
   return results1;
 };
@@ -801,14 +946,69 @@ onPasteImage = function(e) {
   fr.onload = function(e) {
     var base64;
     base64 = e.target.result;
-    //window.parseImage base64
-    return window.parseImageDebug(base64);
+    return window.parseImage(base64);
   };
+  //window.parseImageDebug base64
   fr.readAsDataURL(imageFile);
   return true;
 };
 
-parseImage = function(base64) {};
+parseImage = function(base64) {
+  var callback, img;
+  img = new ImageFileMimicLogic(base64);
+  callback = function() {
+    var canvas, cond, condIndex, hField, imageFile, j, len, matchRates, mimicMad, mimicMax, mimicMin, point, pointIndex, points, ref, targetImageFile, wField;
+    if (!img.isLoaded()) {
+      setTimeout(callback, 100);
+      return;
+    }
+    window.IS_WAIT = true;
+    [points, wField, hField] = img.getLeftUpPoint();
+    console.log('points:', points);
+    mimicMin = $('#num_mimic_min').val();
+    mimicMax = $('#num_mimic_max').val();
+    mimicMad = $('#num_mad').val();
+    $('#num_x').val(wField);
+    $('#num_y').val(hField);
+    reset();
+    $('#num_mimic_min').val(mimicMin);
+    $('#num_mimic_max').val(mimicMax);
+    $('#num_mad').val(mimicMad);
+    for (pointIndex = j = 0, len = points.length; j < len; pointIndex = ++j) {
+      point = points[pointIndex];
+      // 吹き出し領域のキャンバス
+      canvas = document.createElement('canvas');
+      [canvas.width, canvas.height] = [point.w, point.h];
+      canvas.getContext('2d').drawImage(img.canvas, point.x, point.y, point.w, point.h, 0, 0, point.w, point.h);
+      imageFile = new ImageFileMimicLogic(canvas, ImageFileMimicLogic.MODE.CANVAS);
+      // 比較
+      matchRates = [];
+      ref = window.COND_IMAGE_FILES;
+      for (condIndex in ref) {
+        targetImageFile = ref[condIndex];
+        if (targetImageFile === null) {
+          continue;
+        }
+        matchRates.push([condIndex, imageFile.getMatchRate(targetImageFile)]);
+      }
+      matchRates.sort(function(a, b) {
+        return b[1] - a[1];
+      });
+      console.log('matchRates[' + pointIndex + ']', matchRates);
+      // 条件文はこれ
+      cond = matchRates[0][0];
+      $('.cond1').eq(point.index).val(cond2cond1(cond));
+      changeCond2.bind($('.cond1').eq(point.index))();
+      $('.cond2').eq(point.index).val(cond);
+      // 色
+      $('select.box').eq(point.index).selectpicker('val', point.color);
+      window.IS_WAIT = false;
+    }
+    console.log('finished.parseImage');
+    return judge();
+  };
+  return setTimeout(callback, 100);
+};
 
 cond2cond1 = function(cond) {
   var cond1, cond2japanese, id, obj, ref;
@@ -947,6 +1147,9 @@ changeCond2 = function() {
 
 judge = function() {
   var allowed, cellNum, colors, conds, condsIndex, condsLight, confirms, dummy, index, j, kakuteiTypes, key, l, len, len1, len2, len3, madPattern, madPatternOnlyMimicResearch, numCommodity, numEquip, numMad, numMimic, numMimicMax, numMimicMin, numMoney, nums, o, patterns, q, r, ref, ref1, ref2, ref3, ref4, ref5, ref6, s, stockedIndexes, t, typeConst, u, val, validOnlyMimicResearch, validPattern, validPatternOnlyMimicResearch, valids, validsOnlyMimicResearch, value, x, y, z;
+  if (window.IS_WAIT) {
+    return;
+  }
   viewTitle(null);
   x = getX();
   y = getY();
@@ -1393,9 +1596,11 @@ isValidPattern = function(conds, colors, stockedIndexes, pattern, nums, madPatte
         // ミミック同士は隣り合った位置に
         // いる
         case 1100:
+        case 1101:
           return isMimicNearly(pattern, stockedIndexes.NEAR);
         // いない
         case 1110:
+        case 1111:
           return !isMimicNearly(pattern, stockedIndexes.NEAR);
         
         // 上の列と下の列は

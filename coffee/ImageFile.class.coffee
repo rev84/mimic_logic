@@ -7,6 +7,7 @@ class ImageFile
     BASE64: 0
     IMAGE: 1
     CANVAS: 2
+
   constructor:(base64OrImageOrCanvas, mode = @MODE.BASE64)->
     @ctx = null
     switch mode

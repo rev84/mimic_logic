@@ -41,14 +41,14 @@ parseImageDebug = (base64)->
       setTimeout callback, 1000
       return
     leftups = img.getLeftUpPoint()
-    console.log leftups
+    console.log 'leftups:', leftups
     for [x, y, w, h] in leftups
       [canvas, ctx] = putCanvas(w, h)
       ctx.drawImage img.canvas, x, y, w, h, 0, 0, w, h
       imageFile = new ImageFileMimicLogic canvas, ImageFileMimicLogic.MODE.IMAGE
       $('#debug_image_paste').append $('<img>').attr('src', imageFile.getBase64BinarizeCond())
       matchRates = []
-      for condIndex, targetImageFile of window.COND2IMAGE_FILE
+      for condIndex, targetImageFile of window.COND_IMAGE_FILES
         continue if targetImageFile is null
         matchRates.push [condIndex, imageFile.getMatchRate targetImageFile]
       matchRates.sort (a, b)-> b[1] - a[1]
@@ -63,14 +63,14 @@ parseImageDebug = (base64)->
         html += '<th>'+condId2Text(condIndex)+'</th>'
         html += '<td>'+condIndex+'</td>'
         html += '<td class="right">'+rate+'</td>'
-        html += '<td><img src="'+window.COND2IMAGE_FILE[condIndex].getBase64BinarizeCond()+'"></td>' if window.COND2IMAGE_FILE[condIndex]
+        html += '<td><img src="'+window.COND_IMAGE_FILES[condIndex].getBase64BinarizeCond()+'"></td>' if window.COND2IMAGE_FILE[condIndex]
         html += '</tr>'
       $('#debug_image_paste').append $('<p>').html(html)
 
     # ないやつを出す
     $('#debug_image_paste').append $('<h2>').html('まだないやつ')
     tb = $('<table>')
-    for index, obj of window.COND2IMAGE_FILE
+    for index, obj of window.COND_IMAGE_FILES
       if obj is null
         tr = $('<tr>')
         tr.append $('<td>').html(index)

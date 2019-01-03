@@ -73,6 +73,53 @@ class ImageFileMimicLogic extends ImageFile
       ]
     @myBinarizeCond
 
+  # 宝箱の位置検出
+  getTreasureboxPoints:(treasureboxImageFiles)->
+    baseRgb = @getRgb()
+    treasureboxes = []
+    scores = []
+    #scores = Utl.array2dFill baseRgb.length, baseRgb[0].length, 0
+    for key, imageFile of treasureboxImageFiles
+      SCORE_LIMIT = (imageFile.getWidth()*imageFile.getHeight()*255*3)*0.075 # このスコア以上行った時点で探索打ち切り
+
+      rgb = imageFile.getRgb()
+      for baseX in [0...baseRgb.length]
+        continue if baseRgb.length <= baseX + imageFile.getWidth()
+        for baseY in [0...baseRgb[baseX].length]
+          continue if baseRgb[baseX].length <= baseY + imageFile.getHeight()
+          score = 0
+          for x in [0...rgb.length]
+            for y in [0...rgb[x].length]
+              score += Math.abs(baseRgb[baseX+x][baseY+y].r - rgb[x][y].r)
+              score += Math.abs(baseRgb[baseX+x][baseY+y].g - rgb[x][y].g)
+              score += Math.abs(baseRgb[baseX+x][baseY+y].b - rgb[x][y].b)
+            # 行き過ぎなので打ち切り
+            if SCORE_LIMIT < score
+              score = Number.MAX_SAFE_INTEGER
+              break
+          # スコアがしきい値以内なので追加
+          if score <= SCORE_LIMIT
+            scores.push [baseX, baseY, window.COLORS[key], score]
+            #console.log 'SCORE_LIMIT:',SCORE_LIMIT
+          #scores[baseX][baseY] = [baseX, baseY, key, score]
+
+    # このソートでindexに対応
+    scores.sort (a, b)->
+      y = a[1] - b[1]
+      return y if y isnt 0
+      a[0] - b[0]
+
+    # フィールドの横・縦幅を取得
+    xs = []
+    ys = []
+    for [x, y, color, score] in scores
+      xs.push x unless Utl.inArray x, xs
+      ys.push y unless Utl.inArray y, ys
+    wField = xs.length
+    hField = ys.length
+    console.log 'scores:', scores
+    [scores, wField, hField]
+
   # 吹き出しの左上の座標を取得
   getLeftUpPoint:->
     # 横棒と認識する最低の長さ
@@ -115,7 +162,7 @@ class ImageFileMimicLogic extends ImageFile
       cond1 = a[1] - b[1]
       return cond1 if cond1 isnt 0
       a[0] - b[0]
-    console.log 'startPoints:', startPoints
+    #console.log 'startPoints:', startPoints
 
     # startPointsを2つずつ選んで組をつくる
     results = []
@@ -127,7 +174,38 @@ class ImageFileMimicLogic extends ImageFile
         [targetX, targetY, targetCount] = startPoints[targetIndex]
         continue if usedStartPoints[targetIndex]
         if baseX-2 <= targetX <= baseX+2 and baseY < targetY
-          results.push [baseX-MARGIN_WIDTH, baseY, baseCount+MARGIN_WIDTH*2, targetY - baseY]
+          results.push {
+            x:baseX-MARGIN_WIDTH
+            y:baseY
+            w:baseCount+MARGIN_WIDTH*2
+            h:targetY - baseY
+            index: 0
+          }
           usedStartPoints[baseIndex] = usedStartPoints[targetIndex] = true
           break
-    results
+
+    # 宝箱の位置検出
+    [treasurePoints, wField, hField] = @getTreasureboxPoints(window.TREASUREBOX_IMAGE_FILES)
+    # 宝箱の情報から、吹き出しのインデックスを特定
+    decidedIndexes = Utl.arrayFill results.length, false
+    for [treasureX, treasureY, colorId], treasureIndex in treasurePoints
+      nearScores = []
+      nearScores[decidedIndex] = {index: decidedIndex, score: Number.MAX_SAFE_INTEGER} for decidedIndex in [0...decidedIndexes.length]
+      for isDecided, resultIndex in decidedIndexes
+        # もう決定済み
+        continue if isDecided
+        # 宝箱より右や下の吹き出しはありえない
+        continue if treasureX < results[resultIndex].x or treasureY < results[resultIndex].y
+        nearScores[resultIndex].score = Math.abs(treasureX - results[resultIndex].x) + Math.abs(treasureY - results[resultIndex].y)
+      # ソートして一番距離が短いもの
+      nearScores.sort((a, b)-> a.score - b.score)
+      # これが対応する吹き出しのインデックス
+      nearestIndex = nearScores[0].index
+      results[nearestIndex].index = treasureIndex
+      results[nearestIndex].color = colorId
+      decidedIndexes[nearestIndex] = true
+
+    # 確定したインデックス順に並べ替える
+    results.sort((a, b)-> a.index - b.index)
+
+    [results, wField, hField]
