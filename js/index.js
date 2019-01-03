@@ -239,6 +239,44 @@ ImageFile = (function() {
 }).call(this);
 
 ImageFileMimicLogic = class ImageFileMimicLogic extends ImageFile {
+  // ミミックの数を取得
+  getMimicNum(mimicLabelImage, mimicNumImages) {
+    var SCORE_LIMIT, j, l, labelRgb, myRgb, o, q, ref, ref1, ref2, score, scores, x, y;
+    SCORE_LIMIT = (mimicLabelImage.getWidth() * mimicLabelImage.getHeight() * 255 * 3) * 0.075;
+    myRgb = this.getRgb();
+    labelRgb = mimicLabelImage.getRgb();
+    scores = [];
+// 縦は100ピクセルまで
+    for (y = j = 0; j < 100; y = ++j) {
+      for (x = l = 0, ref = this.getWidth(); (0 <= ref ? l < ref : l > ref); x = 0 <= ref ? ++l : --l) {
+        if (this.getWidth() <= x + mimicLabelImage.getWidth()) {
+          continue;
+        }
+        score = 0;
+        for (x = o = 0, ref1 = labelRgb.length; (0 <= ref1 ? o < ref1 : o > ref1); x = 0 <= ref1 ? ++o : --o) {
+          for (y = q = 0, ref2 = labelRgb[x].length; (0 <= ref2 ? q < ref2 : q > ref2); y = 0 <= ref2 ? ++q : --q) {
+            score += Math.abs(myRgb[baseX + x][baseY + y].r - labelRgb[x][y].r);
+            score += Math.abs(myRgb[baseX + x][baseY + y].g - labelRgb[x][y].g);
+            score += Math.abs(myRgb[baseX + x][baseY + y].b - labelRgb[x][y].b);
+            // 行き過ぎなので打ち切り
+            if (SCORE_LIMIT < score) {
+              score = Number.MAX_SAFE_INTEGER;
+              break;
+            }
+          }
+          // スコアがしきい値以内なので追加
+          if (score <= SCORE_LIMIT) {
+            scores.push([x, y, score]);
+          }
+        }
+      }
+    }
+    return scores.sort(function(a, b) {
+      return a[2] - b[2];
+    });
+  }
+
+  
   // 一致率を取得
   getMatchRate(imageFileMimicLogic) {
     var aBinary, bBinary, j, l, ref, ref1, ref2, ref3, score, x, y;

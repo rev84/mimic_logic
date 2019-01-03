@@ -1,4 +1,31 @@
 class ImageFileMimicLogic extends ImageFile
+  # ミミックの数を取得
+  getMimicNum:(mimicLabelImage, mimicNumImages)->
+    SCORE_LIMIT = (mimicLabelImage.getWidth()*mimicLabelImage.getHeight()*255*3)*0.075
+
+    myRgb = @getRgb()
+    labelRgb = mimicLabelImage.getRgb()
+    scores = []
+    # 縦は100ピクセルまで
+    for y in [0...100]
+      for x in [0...@getWidth()]
+        continue if @getWidth() <= x + mimicLabelImage.getWidth()
+        score = 0
+        for x in [0...labelRgb.length]
+          for y in [0...labelRgb[x].length]
+            score += Math.abs(myRgb[baseX+x][baseY+y].r - labelRgb[x][y].r)
+            score += Math.abs(myRgb[baseX+x][baseY+y].g - labelRgb[x][y].g)
+            score += Math.abs(myRgb[baseX+x][baseY+y].b - labelRgb[x][y].b)
+            # 行き過ぎなので打ち切り
+            if SCORE_LIMIT < score
+              score = Number.MAX_SAFE_INTEGER
+              break
+          # スコアがしきい値以内なので追加
+          if score <= SCORE_LIMIT
+            scores.push [x, y, score]
+    scores.sort((a, b)-> a[2] - b[2])
+    
+
   # 一致率を取得
   getMatchRate:(imageFileMimicLogic)->
     # 横幅が合わない
