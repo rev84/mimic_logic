@@ -15,6 +15,26 @@ class ImageFileMimicLogic extends ImageFile
         score++ unless aBinary[x][y] ^ bBinary[x][y]
     score / (imageFileMimicLogic.getWidth() * imageFileMimicLogic.getHeight())
 
+  getBase64Binarize:(binary)->
+    canvas = document.createElement('canvas')
+    ctx = canvas.getContext('2d')
+    [canvas.width, canvas.height] = [@getWidth(), @getHeight()]
+    ctx.fillStyle = '#aaaaaa'
+    ctx.fillRect 0, 0, @getWidth(), @getHeight()
+    ctx.fillStyle = '#000000'
+    
+    for x in [0...binary.length]
+      for y in [0...binary[x].length]
+        ctx.fillRect x, y, 1, 1 if binary[x][y]
+
+    canvas.toDataURL()
+
+  getBase64BinarizeBorder:->
+    @getBase64Binarize @getMyBinarizeBorder()
+
+  getBase64BinarizeCond:->
+    @getBase64Binarize @getMyBinarizeCond()
+
   # 枠線を探す2値化をキャッシュ
   getMyBinarizeBorder:->
     unless @myBinarizeBorder?
@@ -22,7 +42,8 @@ class ImageFileMimicLogic extends ImageFile
         {
           r: {min: 190}
           g: {min: 190}
-          b: {min: 190}
+          b: {min: 190
+          }
         }
       ]
     @myBinarizeBorder
@@ -33,9 +54,9 @@ class ImageFileMimicLogic extends ImageFile
       @myBinarizeCond = @binarize 0, 0, undefined, undefined, [
         # 白文字
         {
-          r: {min:150}
-          g: {min:150}
-          b: {min:150}
+          r: {min:75}
+          g: {min:75}
+          b: {min:75}
         }
         # 赤文字
         {
@@ -45,8 +66,8 @@ class ImageFileMimicLogic extends ImageFile
         }
         # 青文字
         {
-          r: {max:150}
-          g: {max:150}
+          r: {max:100}
+          g: {max:200}
           b: {min:90}
         }
       ]

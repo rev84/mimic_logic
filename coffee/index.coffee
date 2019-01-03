@@ -23,9 +23,9 @@ window.DIRECTIONS =
 window.CONDS = 
   'Zzz...':
     0: 'Zzz...'
-  'ミミック2匹が縦か横で隣あった位置には':
+  'ミミック2匹以上が縦か横で隣あった位置に':
     1100: 'いる'
-    1110: 'いない'
+    1110: 'はいない'
   '上の宝箱は':
     710: 'ミミックだ'
     720: 'ミミックじゃない'
@@ -267,7 +267,7 @@ initImage = ->
     for condIndex, condText of val
       image = new Image()
       image.onload = onload.bind(image, condIndex, image)
-      image.onerror = onload.bind(image, condIndex)
+      image.onerror = onerror.bind(image, condIndex)
       image.src = './image/conds/'+condIndex+'.png'
 
 onPasteImage = (e)->
@@ -289,41 +289,12 @@ onPasteImage = (e)->
   fr = new FileReader
   fr.onload = (e) ->
     base64 = e.target.result
-    window.parseImage base64
+    #window.parseImage base64
+    window.parseImageDebug base64
   fr.readAsDataURL imageFile
   return true
 
 parseImage = (base64)->
-  img = new ImageFileMimicLogic base64
-  callback = ->
-    unless img.isLoaded()
-      setTimeout callback, 1000
-      return
-    leftups = img.getLeftUpPoint()
-    console.log leftups
-    for [x, y, w, h] in leftups
-      [canvas, ctx] = putCanvas(w, h)
-      ctx.drawImage img.canvas, x, y, w, h, 0, 0, w, h
-      imageFile = new ImageFileMimicLogic canvas, ImageFileMimicLogic.MODE.IMAGE
-      matchRates = []
-      for condIndex, targetImageFile of window.COND2IMAGE_FILE
-        matchRates.push [condIndex, imageFile.getMatchRate targetImageFile]
-      matchRates.sort (a, b)-> b[1] - a[1]
-      #console.log 'matchRates:', matchRates
-      html = '<table class="table table-bordered">'
-      for index in [0...5]
-        [condIndex, rate] = matchRates[index]
-        classes = []
-        if rate > 0.98 and index is 0
-          classes.push 'confirm'
-        html += '<tr class="'+classes.join(' ')+'">'
-        html += '<th>'+condId2Text(condIndex)+'</th>'
-        html += '<td>'+condIndex+'</td>'
-        html += '<td class="right">'+rate+'</td>'
-        html += '</tr>'
-      $('#debug_image_paste').append $('<p>').html(html)
-    
-  setTimeout callback, 1000
 
 
 
