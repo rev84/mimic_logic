@@ -101,3 +101,7 @@
 .black {
   color: gray;
 }
+
+canvas {
+  display: block;
+}

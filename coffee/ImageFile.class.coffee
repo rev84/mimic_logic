@@ -1,27 +1,54 @@
 class ImageFile
-  constructor:(base64)->
+  @MODE = 
+    BASE64: 0
+    IMAGE: 1
+    CANVAS: 2
+  MODE:
+    BASE64: 0
+    IMAGE: 1
+    CANVAS: 2
+  constructor:(base64OrImageOrCanvas, mode = @MODE.BASE64)->
     @ctx = null
-    @loaded = false
-    img = new Image()
-    img.onload = (e)=>
-      @canvas = document.createElement('canvas')
-      [@canvas.width, @canvas.height] = [img.width, img.height]
-      @ctx = @canvas.getContext('2d')
-      @ctx.drawImage img, 0, 0
-      @loaded = true
-    img.src = base64
+    switch mode
+      when @MODE.BASE64
+        @loaded = false
+        img = new Image()
+        img.onload = (e)=>
+          @canvas = document.createElement('canvas')
+          [@canvas.width, @canvas.height] = [img.width, img.height]
+          @ctx = @canvas.getContext('2d')
+          @ctx.drawImage img, 0, 0
+          @loaded = true
+        img.src = base64OrImageOrCanvas
+      when @MODE.IMAGE
+        @canvas = document.createElement('canvas')
+        [@canvas.width, @canvas.height] = [base64OrImageOrCanvas.width, base64OrImageOrCanvas.height]
+        @ctx = @canvas.getContext('2d')
+        @ctx.drawImage base64OrImageOrCanvas, 0, 0
+        @loaded = true
+      when @MODE.CANVAS
+        @canvas = base64OrImageOrCanvas
+        @ctx = @canvas.getContext('2d')
+        @loaded = true
 
-  binarize:(x = 0, y = 0, w = @getWidth(), h = @getHeight(), r = null, g = null, b = null)->
+  binarize:(x = 0, y = 0, w = @getWidth(), h = @getHeight(), rgbFilters = [])->
     rgb = @getRgb(x, y, w, h)
     for x in [0...rgb.length]
       for y in [0...rgb[x].length]
-        rCond = r is null or rgb[x][y].r >= r
-        gCond = g is null or rgb[x][y].g >= g
-        bCond = b is null or rgb[x][y].b >= b
-
-        rgb[x][y] = rCond and gCond and bCond
-        console.log 'binary:', x, y if rCond and gCond and bCond
-
+        # フィルタ
+        filterOk = true
+        for rgbFilter in rgbFilters
+          filterOk = true
+          for key, val of rgbFilter
+            if val isnt null
+              if val.min? and rgb[x][y][key] < val.min
+                filterOk = false
+                break
+              if val.max? and val.max < rgb[x][y][key]
+                filterOk = false
+                break
+          break if filterOk
+        rgb[x][y] = filterOk
     rgb
 
   getRgb:(x = 0, y = 0, w = @getWidth(), h = @getHeight())->

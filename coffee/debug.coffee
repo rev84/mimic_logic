@@ -26,3 +26,11 @@ debug = ->
   
   for cond, index in conds
     $('.cond2').eq(index).val(cond)
+
+putCanvas = (w, h)->
+  debug_image_paste = document.getElementById('debug_image_paste')
+  canvas = document.createElement('canvas')
+  [canvas.width, canvas.height] = [w, h]
+  debug_image_paste.appendChild(canvas)
+  [canvas, canvas.getContext('2d')]
+  

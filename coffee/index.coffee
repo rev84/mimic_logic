@@ -250,9 +250,25 @@ window.CONDS =
 window.CACHE =
   TD_HTML: null
 
+window.COND2IMAGE_FILE = {}
+
 $().ready ->
   init()
+  initImage()
   debug()
+
+initImage = ->
+  images = {}
+  onload = (index, img)->
+    window.COND2IMAGE_FILE[index] = new ImageFileMimicLogic(img, ImageFileMimicLogic.MODE.IMAGE)
+  onerror = (index)->
+    window.COND2IMAGE_FILE[index] = null
+  for key, val of window.CONDS
+    for condIndex, condText of val
+      image = new Image()
+      image.onload = onload.bind(image, condIndex, image)
+      image.onerror = onload.bind(image, condIndex)
+      image.src = './image/conds/'+condIndex+'.png'
 
 onPasteImage = (e)->
   # ブラウザによる貼り付けは無効
@@ -283,9 +299,22 @@ parseImage = (base64)->
     unless img.isLoaded()
       setTimeout callback, 1000
       return
-    console.log img.getLeftUpPoint()
+    leftups = img.getLeftUpPoint()
+    console.log leftups
+    for [x, y, w, h] in leftups
+      [canvas, ctx] = putCanvas(w, h)
+      ctx.drawImage img.canvas, x, y, w, h, 0, 0, w, h
+      imageFile = new ImageFileMimicLogic canvas, ImageFileMimicLogic.MODE.IMAGE
+      matchRates = {}
+      for condIndex, targetImageFile of window.COND2IMAGE_FILE
+        matchRates[condIndex] = imageFile.getMatchRate targetImageFile
+      htmls = []
+      for condIndex, rate of matchRates
+        htmls.push ''+condIndex+':'+rate
+      $('#debug').append $('<p>').html(htmls.join('<br>'))
     
   setTimeout callback, 1000
+
 
 
 cond2cond1 = (cond)->
