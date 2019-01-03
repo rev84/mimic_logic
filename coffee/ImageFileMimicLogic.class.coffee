@@ -2,26 +2,27 @@ class ImageFileMimicLogic extends ImageFile
   # 一致率を取得
   getMatchRate:(imageFileMimicLogic)->
     # 横幅が合わない
-    return 0 if imageFileMimicLogic.getWidth() isnt @getWidth()
+    return 0 unless imageFileMimicLogic.getWidth()-1 <= @getWidth() <= imageFileMimicLogic.getWidth()+1
     # 縦幅が合わない
-    return 0 if imageFileMimicLogic.getHeight() isnt @getHeight()
+    return 0 unless imageFileMimicLogic.getHeight()-1 <= @getHeight() <= imageFileMimicLogic.getHeight()+1
     # 検索
     aBinary = imageFileMimicLogic.getMyBinarizeCond()
     bBinary = @getMyBinarizeCond()
     score = 0
     for x in [0...aBinary.length]
       for y in [0...aBinary[x].length]
+        continue unless bBinary[x]? and bBinary[x][y]?
         score++ unless aBinary[x][y] ^ bBinary[x][y]
-    score / (@getWidth() * @getHeight())
+    score / (imageFileMimicLogic.getWidth() * imageFileMimicLogic.getHeight())
 
   # 枠線を探す2値化をキャッシュ
   getMyBinarizeBorder:->
     unless @myBinarizeBorder?
       @myBinarizeBorder = @binarize 0, 0, undefined, undefined, [
         {
-          r: {min: 200}
-          g: {min: 200}
-          b: {min: 200}
+          r: {min: 190}
+          g: {min: 190}
+          b: {min: 190}
         }
       ]
     @myBinarizeBorder
@@ -95,43 +96,17 @@ class ImageFileMimicLogic extends ImageFile
       a[0] - b[0]
     console.log 'startPoints:', startPoints
 
-    # y座標のリストを作る
-    yList = []
-    for [xStart, y, count], index in startPoints
-      yList.push y unless Utl.inArray y, yList
-    yList.sort ((a, b)-> a - b)
-    console.log 'yList:', yList
-
-    # 上の棒のy座標でフィルタするとともに、縦幅も取得する
-    yUpperList = []
-    yLengthList = []
-    for y, index in yList
-      if index % 2 is 0
-        yUpperList.push y
-      else
-        yLengthList.push(y - yUpperList[index // 2])
-    console.log 'yUpperList:', yUpperList
-    console.log 'yLengthList:', yLengthList
-
-    # 縦の宝箱の数
-    yCount = yUpperList.length
-
-    # 各y座標での左端の点を取得
-    pastY = null
-    xCount = 0
-    yCurrent = -1
-    leftUpPoints = []
-    for [xStart, y, w] in startPoints
-      continue unless Utl.inArray y, yUpperList
-      if pastY isnt y
-        xCount = 0
-        pastY = y
-        yCurrent++
-      h = yLengthList[yCurrent]
-      x = xStart - MARGIN_WIDTH # 吹き出しの始まり
-      w += MARGIN_WIDTH * 2 # 横棒の長さからマージン2つ分の長さ
-      leftUpPoints.push [x, y, w, h]
-
-    console.log 'leftUpPoints:', leftUpPoints
-    leftUpPoints
-    
+    # startPointsを2つずつ選んで組をつくる
+    results = []
+    usedStartPoints = Utl.arrayFill startPoints.length, false
+    for baseIndex in [0...startPoints.length]
+      [baseX, baseY, baseCount] = startPoints[baseIndex]
+      continue if usedStartPoints[baseIndex]
+      for targetIndex in [baseIndex+1...startPoints.length]
+        [targetX, targetY, targetCount] = startPoints[targetIndex]
+        continue if usedStartPoints[targetIndex]
+        if baseX-2 <= targetX <= baseX+2 and baseY < targetY
+          results.push [baseX-MARGIN_WIDTH, baseY, baseCount+MARGIN_WIDTH*2, targetY - baseY]
+          usedStartPoints[baseIndex] = usedStartPoints[targetIndex] = true
+          break
+    results

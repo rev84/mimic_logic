@@ -2,7 +2,7 @@
 var ImageFile, ImageFileMimicLogic, changeCond2, checkMimic, clear, compareIndexes, cond2cond1, condId2Text, debug, downDementionStat, genPattern, getCellNum, getColorIndexes, getColorNearIndexes, getConfirmTypes, getLineIndexes, getMimicIndexes, getMimicNearIndexes, getNearIndexes, getNumCommodity, getNumEquip, getNumMad, getNumMimicMax, getNumMimicMin, getNumMoney, getPatternMad, getTd, getValidPatterns, getX, getY, init, initImage, isContainColorNearMimic, isContainType, isContainTypeCount, isItemDetail, isMimicNearly, isNotContainType, isValidPattern, judge, mustConsiderType, onPasteImage, parseImage, putCanvas, reset, statValidPatterns, viewDetail, viewTitle;
 
 debug = function() {
-  var color, colors, cond, conds, index, j, l, len, len1, len2, o, results;
+  var color, colors, cond, conds, index, j, l, len, len1, len2, o, results1;
   conds = [810, 920, 920, 710, 1020, 920];
   colors = [1, 1, 1, 1, 1, 1];
   $('#num_x').val(3);
@@ -26,12 +26,12 @@ debug = function() {
   $('.cond1').each(function() {
     return changeCond2.bind(this)();
   });
-  results = [];
+  results1 = [];
   for (index = o = 0, len2 = conds.length; o < len2; index = ++o) {
     cond = conds[index];
-    results.push($('.cond2').eq(index).val(cond));
+    results1.push($('.cond2').eq(index).val(cond));
   }
-  return results;
+  return results1;
 };
 
 putCanvas = function(w, h) {
@@ -175,12 +175,12 @@ ImageFile = (function() {
 ImageFileMimicLogic = class ImageFileMimicLogic extends ImageFile {
   // 一致率を取得
   getMatchRate(imageFileMimicLogic) {
-    var aBinary, bBinary, j, l, ref, ref1, score, x, y;
-    if (imageFileMimicLogic.getWidth() !== this.getWidth()) {
+    var aBinary, bBinary, j, l, ref, ref1, ref2, ref3, score, x, y;
+    if (!((imageFileMimicLogic.getWidth() - 1 <= (ref = this.getWidth()) && ref <= imageFileMimicLogic.getWidth() + 1))) {
       // 横幅が合わない
       return 0;
     }
-    if (imageFileMimicLogic.getHeight() !== this.getHeight()) {
+    if (!((imageFileMimicLogic.getHeight() - 1 <= (ref1 = this.getHeight()) && ref1 <= imageFileMimicLogic.getHeight() + 1))) {
       // 縦幅が合わない
       return 0;
     }
@@ -188,14 +188,17 @@ ImageFileMimicLogic = class ImageFileMimicLogic extends ImageFile {
     aBinary = imageFileMimicLogic.getMyBinarizeCond();
     bBinary = this.getMyBinarizeCond();
     score = 0;
-    for (x = j = 0, ref = aBinary.length; (0 <= ref ? j < ref : j > ref); x = 0 <= ref ? ++j : --j) {
-      for (y = l = 0, ref1 = aBinary[x].length; (0 <= ref1 ? l < ref1 : l > ref1); y = 0 <= ref1 ? ++l : --l) {
+    for (x = j = 0, ref2 = aBinary.length; (0 <= ref2 ? j < ref2 : j > ref2); x = 0 <= ref2 ? ++j : --j) {
+      for (y = l = 0, ref3 = aBinary[x].length; (0 <= ref3 ? l < ref3 : l > ref3); y = 0 <= ref3 ? ++l : --l) {
+        if (!((bBinary[x] != null) && (bBinary[x][y] != null))) {
+          continue;
+        }
         if (!(aBinary[x][y] ^ bBinary[x][y])) {
           score++;
         }
       }
     }
-    return score / (this.getWidth() * this.getHeight());
+    return score / (imageFileMimicLogic.getWidth() * imageFileMimicLogic.getHeight());
   }
 
   // 枠線を探す2値化をキャッシュ
@@ -204,13 +207,13 @@ ImageFileMimicLogic = class ImageFileMimicLogic extends ImageFile {
       this.myBinarizeBorder = this.binarize(0, 0, void 0, void 0, [
         {
           r: {
-            min: 200
+            min: 190
           },
           g: {
-            min: 200
+            min: 190
           },
           b: {
-            min: 200
+            min: 190
           }
         }
       ]);
@@ -265,7 +268,7 @@ ImageFileMimicLogic = class ImageFileMimicLogic extends ImageFile {
 
   // 吹き出しの左上の座標を取得
   getLeftUpPoint() {
-    var COUNT_MIN, MARGIN_WIDTH, count, h, inArrayNear, index, isWhite, j, l, leftUpPoints, len, len1, len2, myBinaryBorder, o, pastY, q, r, ref, ref1, startPoints, w, x, xCount, xStart, y, yCount, yCurrent, yLengthList, yList, yUpperList;
+    var COUNT_MIN, MARGIN_WIDTH, baseCount, baseIndex, baseX, baseY, count, inArrayNear, isWhite, j, l, myBinaryBorder, o, q, ref, ref1, ref2, ref3, ref4, results, startPoints, targetCount, targetIndex, targetX, targetY, usedStartPoints, x, xStart, y;
     // 横棒と認識する最低の長さ
     COUNT_MIN = 20;
     // 吹き出しの丸い部分の横幅
@@ -325,55 +328,27 @@ ImageFileMimicLogic = class ImageFileMimicLogic extends ImageFile {
       return a[0] - b[0];
     });
     console.log('startPoints:', startPoints);
-    // y座標のリストを作る
-    yList = [];
-    for (index = o = 0, len = startPoints.length; o < len; index = ++o) {
-      [xStart, y, count] = startPoints[index];
-      if (!Utl.inArray(y, yList)) {
-        yList.push(y);
-      }
-    }
-    yList.sort((function(a, b) {
-      return a - b;
-    }));
-    console.log('yList:', yList);
-    // 上の棒のy座標でフィルタするとともに、縦幅も取得する
-    yUpperList = [];
-    yLengthList = [];
-    for (index = q = 0, len1 = yList.length; q < len1; index = ++q) {
-      y = yList[index];
-      if (index % 2 === 0) {
-        yUpperList.push(y);
-      } else {
-        yLengthList.push(y - yUpperList[Math.floor(index / 2)]);
-      }
-    }
-    console.log('yUpperList:', yUpperList);
-    console.log('yLengthList:', yLengthList);
-    // 縦の宝箱の数
-    yCount = yUpperList.length;
-    // 各y座標での左端の点を取得
-    pastY = null;
-    xCount = 0;
-    yCurrent = -1;
-    leftUpPoints = [];
-    for (r = 0, len2 = startPoints.length; r < len2; r++) {
-      [xStart, y, w] = startPoints[r];
-      if (!Utl.inArray(y, yUpperList)) {
+    // startPointsを2つずつ選んで組をつくる
+    results = [];
+    usedStartPoints = Utl.arrayFill(startPoints.length, false);
+    for (baseIndex = o = 0, ref2 = startPoints.length; (0 <= ref2 ? o < ref2 : o > ref2); baseIndex = 0 <= ref2 ? ++o : --o) {
+      [baseX, baseY, baseCount] = startPoints[baseIndex];
+      if (usedStartPoints[baseIndex]) {
         continue;
       }
-      if (pastY !== y) {
-        xCount = 0;
-        pastY = y;
-        yCurrent++;
+      for (targetIndex = q = ref3 = baseIndex + 1, ref4 = startPoints.length; (ref3 <= ref4 ? q < ref4 : q > ref4); targetIndex = ref3 <= ref4 ? ++q : --q) {
+        [targetX, targetY, targetCount] = startPoints[targetIndex];
+        if (usedStartPoints[targetIndex]) {
+          continue;
+        }
+        if ((baseX - 2 <= targetX && targetX <= baseX + 2) && baseY < targetY) {
+          results.push([baseX - MARGIN_WIDTH, baseY, baseCount + MARGIN_WIDTH * 2, targetY - baseY]);
+          usedStartPoints[baseIndex] = usedStartPoints[targetIndex] = true;
+          break;
+        }
       }
-      h = yLengthList[yCurrent];
-      x = xStart - MARGIN_WIDTH; // 吹き出しの始まり
-      w += MARGIN_WIDTH * 2; // 横棒の長さからマージン2つ分の長さ
-      leftUpPoints.push([x, y, w, h]);
     }
-    console.log('leftUpPoints:', leftUpPoints);
-    return leftUpPoints;
+    return results;
   }
 
 };
@@ -408,7 +383,7 @@ window.CONDS = {
   'Zzz...': {
     0: 'Zzz...'
   },
-  'ミミック2匹は縦か横で隣あった位置に': {
+  'ミミック2匹が縦か横で隣あった位置には': {
     1100: 'いる',
     1110: 'いない'
   },
@@ -677,7 +652,7 @@ $().ready(function() {
 });
 
 initImage = function() {
-  var condIndex, condText, image, images, key, onerror, onload, ref, results, val;
+  var condIndex, condText, image, images, key, onerror, onload, ref, results1, val;
   images = {};
   onload = function(index, img) {
     return window.COND2IMAGE_FILE[index] = new ImageFileMimicLogic(img, ImageFileMimicLogic.MODE.IMAGE);
@@ -686,23 +661,23 @@ initImage = function() {
     return window.COND2IMAGE_FILE[index] = null;
   };
   ref = window.CONDS;
-  results = [];
+  results1 = [];
   for (key in ref) {
     val = ref[key];
-    results.push((function() {
-      var results1;
-      results1 = [];
+    results1.push((function() {
+      var results2;
+      results2 = [];
       for (condIndex in val) {
         condText = val[condIndex];
         image = new Image();
         image.onload = onload.bind(image, condIndex, image);
         image.onerror = onload.bind(image, condIndex);
-        results1.push(image.src = './image/conds/' + condIndex + '.png');
+        results2.push(image.src = './image/conds/' + condIndex + '.png');
       }
-      return results1;
+      return results2;
     })());
   }
-  return results;
+  return results1;
 };
 
 onPasteImage = function(e) {
@@ -744,14 +719,14 @@ parseImage = function(base64) {
   var callback, img;
   img = new ImageFileMimicLogic(base64);
   callback = function() {
-    var canvas, classes, condIndex, ctx, h, html, imageFile, j, l, leftups, len, len1, matchRates, rate, ref, results, targetImageFile, w, x, y;
+    var canvas, classes, condIndex, ctx, h, html, imageFile, index, j, l, leftups, len, matchRates, rate, ref, results1, targetImageFile, w, x, y;
     if (!img.isLoaded()) {
       setTimeout(callback, 1000);
       return;
     }
     leftups = img.getLeftUpPoint();
     console.log(leftups);
-    results = [];
+    results1 = [];
     for (j = 0, len = leftups.length; j < len; j++) {
       [x, y, w, h] = leftups[j];
       [canvas, ctx] = putCanvas(w, h);
@@ -768,10 +743,10 @@ parseImage = function(base64) {
       });
       //console.log 'matchRates:', matchRates
       html = '<table class="table table-bordered">';
-      for (l = 0, len1 = matchRates.length; l < len1; l++) {
-        [condIndex, rate] = matchRates[l];
+      for (index = l = 0; l < 5; index = ++l) {
+        [condIndex, rate] = matchRates[index];
         classes = [];
-        if (rate > 0.99) {
+        if (rate > 0.98 && index === 0) {
           classes.push('confirm');
         }
         html += '<tr class="' + classes.join(' ') + '">';
@@ -780,9 +755,9 @@ parseImage = function(base64) {
         html += '<td class="right">' + rate + '</td>';
         html += '</tr>';
       }
-      results.push($('#debug_image_paste').append($('<p>').html(html)));
+      results1.push($('#debug_image_paste').append($('<p>').html(html)));
     }
-    return results;
+    return results1;
   };
   return setTimeout(callback, 1000);
 };
@@ -895,7 +870,7 @@ getTd = function(index) {
 };
 
 changeCond2 = function() {
-  var cond1, cond2, condId, j, len, op, options, ref, results, text;
+  var cond1, cond2, condId, j, len, op, options, ref, results1, text;
   cond1 = $(this).val();
   cond2 = $(this).parent().find('.cond2');
   cond2.html('').append($('<option>').html('').attr('value', 0));
@@ -914,12 +889,12 @@ changeCond2 = function() {
     }
     return 0;
   });
-  results = [];
+  results1 = [];
   for (j = 0, len = options.length; j < len; j++) {
     op = options[j];
-    results.push(cond2.append(op));
+    results1.push(cond2.append(op));
   }
-  return results;
+  return results1;
 };
 
 judge = function() {
@@ -1076,7 +1051,7 @@ judge = function() {
 };
 
 viewTitle = function(views = null, mads = null) {
-  var className, html, index, j, l, len, len1, madArray, results, typeConsts;
+  var className, html, index, j, l, len, len1, madArray, results1, typeConsts;
   $('td, .title, .title_mad').removeClass('not_mimic mimic money equip commodity unknown');
   $('.title, .title_mad').html('');
   if (views === null) {
@@ -1113,16 +1088,16 @@ viewTitle = function(views = null, mads = null) {
   }
   // 狂った宝箱判定
   if (mads !== null) {
-    results = [];
+    results1 = [];
     for (index = l = 0, len1 = mads.length; l < len1; index = ++l) {
       madArray = mads[index];
       if (madArray.length === 1 && madArray[0]) {
-        results.push($('.title_mad').eq(index).addClass('mimic').html('狂った宝箱'));
+        results1.push($('.title_mad').eq(index).addClass('mimic').html('狂った宝箱'));
       } else {
-        results.push(void 0);
+        results1.push(void 0);
       }
     }
-    return results;
+    return results1;
   }
 };
 
@@ -1513,9 +1488,9 @@ isValidPattern = function(conds, colors, stockedIndexes, pattern, nums, madPatte
         case 50008:
         case 50009:
           return isContainTypeCount(pattern, (function() {
-            var results = [];
-            for (var l = 0, ref = pattern.length; 0 <= ref ? l < ref : l > ref; 0 <= ref ? l++ : l--){ results.push(l); }
-            return results;
+            var results1 = [];
+            for (var l = 0, ref = pattern.length; 0 <= ref ? l < ref : l > ref; 0 <= ref ? l++ : l--){ results1.push(l); }
+            return results1;
           }).apply(this), window.CONSTS.MIMIC, cond % 10, nums);
         default:
           isTurn = false;
@@ -1931,12 +1906,12 @@ genPattern = function(ary, pattern = null) {
   }
   all = [];
   getPatternFunc = function(m, remain) {
-    var index, l, len1, newM, newRemain, results;
+    var index, l, len1, newM, newRemain, results1;
     if (m.length === total) {
       all.push(m);
       return true;
     }
-    results = [];
+    results1 = [];
     for (index = l = 0, len1 = remain.length; l < len1; index = ++l) {
       num = remain[index];
       if (num <= 0) {
@@ -1952,9 +1927,9 @@ genPattern = function(ary, pattern = null) {
       newRemain = Utl.clone(remain);
       newRemain[index]--;
       newM.push(consts[index]);
-      results.push(getPatternFunc(newM, newRemain));
+      results1.push(getPatternFunc(newM, newRemain));
     }
-    return results;
+    return results1;
   };
   getPatternFunc([], remain);
   console.log('genPattern 組み合わせ:', ary, pattern, all);
@@ -1969,7 +1944,7 @@ getPatternMad = function(numMad, pattern) {
   }
   all = [];
   getPatternFunc = function(m, remain) {
-    var bool, j, len, newM, newRemain, ref, results;
+    var bool, j, len, newM, newRemain, ref, results1;
     if (m.length === pattern.length) {
       if (remain === 0) {
         all.push(m);
@@ -1977,7 +1952,7 @@ getPatternMad = function(numMad, pattern) {
       return true;
     }
     ref = [true, false];
-    results = [];
+    results1 = [];
     for (j = 0, len = ref.length; j < len; j++) {
       bool = ref[j];
       if (bool && remain <= 0) {
@@ -1989,9 +1964,9 @@ getPatternMad = function(numMad, pattern) {
       newM = Utl.clone(m);
       newRemain = bool ? remain - 1 : remain;
       newM.push(bool);
-      results.push(getPatternFunc(newM, newRemain));
+      results1.push(getPatternFunc(newM, newRemain));
     }
-    return results;
+    return results1;
   };
   getPatternFunc([], numMad);
   console.log('getPatternMad 組み合わせ:', numMad, pattern, all);

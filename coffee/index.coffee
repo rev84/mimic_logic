@@ -23,7 +23,7 @@ window.DIRECTIONS =
 window.CONDS = 
   'Zzz...':
     0: 'Zzz...'
-  'ミミック2匹は縦か横で隣あった位置に':
+  'ミミック2匹が縦か横で隣あった位置には':
     1100: 'いる'
     1110: 'いない'
   '上の宝箱は':
@@ -311,9 +311,10 @@ parseImage = (base64)->
       matchRates.sort (a, b)-> b[1] - a[1]
       #console.log 'matchRates:', matchRates
       html = '<table class="table table-bordered">'
-      for [condIndex, rate] in matchRates
+      for index in [0...5]
+        [condIndex, rate] = matchRates[index]
         classes = []
-        if rate > 0.99
+        if rate > 0.98 and index is 0
           classes.push 'confirm'
         html += '<tr class="'+classes.join(' ')+'">'
         html += '<th>'+condId2Text(condIndex)+'</th>'
