@@ -305,13 +305,22 @@ parseImage = (base64)->
       [canvas, ctx] = putCanvas(w, h)
       ctx.drawImage img.canvas, x, y, w, h, 0, 0, w, h
       imageFile = new ImageFileMimicLogic canvas, ImageFileMimicLogic.MODE.IMAGE
-      matchRates = {}
+      matchRates = []
       for condIndex, targetImageFile of window.COND2IMAGE_FILE
-        matchRates[condIndex] = imageFile.getMatchRate targetImageFile
-      htmls = []
-      for condIndex, rate of matchRates
-        htmls.push ''+condIndex+':'+rate
-      $('#debug').append $('<p>').html(htmls.join('<br>'))
+        matchRates.push [condIndex, imageFile.getMatchRate targetImageFile]
+      matchRates.sort (a, b)-> b[1] - a[1]
+      #console.log 'matchRates:', matchRates
+      html = '<table class="table table-bordered">'
+      for [condIndex, rate] in matchRates
+        classes = []
+        if rate > 0.99
+          classes.push 'confirm'
+        html += '<tr class="'+classes.join(' ')+'">'
+        html += '<th>'+condId2Text(condIndex)+'</th>'
+        html += '<td>'+condIndex+'</td>'
+        html += '<td class="right">'+rate+'</td>'
+        html += '</tr>'
+      $('#debug_image_paste').append $('<p>').html(html)
     
   setTimeout callback, 1000
 
@@ -933,6 +942,11 @@ getNumEquip = ->
   Number $('#num_equip').val()
 getNumCommodity = ->
   Number $('#num_commodity').val()
+condId2Text = (condId)->
+  for jap1, val of window.CONDS
+    for id, jap2 of val
+      return jap1+jap2 if Number(id) is Number(condId)
+  null
 # 確定パターンの取得
 getConfirmTypes = (modeNotMimic)->
   confirms = []

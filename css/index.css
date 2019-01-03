@@ -105,3 +105,8 @@
 canvas {
   display: block;
 }
+.confirm {
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #ff0000;
+}

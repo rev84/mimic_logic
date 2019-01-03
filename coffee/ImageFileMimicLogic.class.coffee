@@ -7,7 +7,7 @@ class ImageFileMimicLogic extends ImageFile
     return 0 if imageFileMimicLogic.getHeight() isnt @getHeight()
     # 検索
     aBinary = imageFileMimicLogic.getMyBinarizeCond()
-    bBinary = @getMyBinaryCond()
+    bBinary = @getMyBinarizeCond()
     score = 0
     for x in [0...aBinary.length]
       for y in [0...aBinary[x].length]
